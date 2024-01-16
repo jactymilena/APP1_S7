@@ -1,6 +1,6 @@
 import pygame
 import csv
-#from Monster import *
+from Monster import *
 from Constants import *
 from Door import *
 
