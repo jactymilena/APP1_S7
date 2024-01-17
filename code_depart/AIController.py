@@ -13,6 +13,18 @@ class Node:
 
 class AIController:
     
+    def contains_square(self, center_pos, width, height, walls):
+        for w in walls:
+            if center_pos[0] - width >= w.topleft[0] and center_pos[0] + width <= w.topright[0] and center_pos[1] - height >= w.topleft[1] and center_pos[1] + height <= w.bottomleft[1]:
+                return True
+        return False
+
+    # def contains_square(self, current_pos, walls):
+    #     for w in walls:
+    #         if current_pos[0] >= w.topleft[0] and current_pos[0] <= w.topright[0] and current_pos[1] >= w.topleft[1] and current_pos[1] <= w.bottomleft[1]:
+    #             return True
+    #     return False
+
     def __init__(self, speed):
         self.visited_list = [] # could be a dict
         self.pending_list = []
@@ -28,14 +40,39 @@ class AIController:
 
         self.neighbors_pos = [(x*self.speed, y*self.speed)  for x, y in neighbors_directions]
 
+    
+    def is_overlap(self, current_pos, width, height, tile):
+        import pygame
 
+        rect = pygame.Rect(current_pos[0] - width, current_pos[1] - height, width, height)
+        result =  rect.colliderect(tile)
+        return result
 
     def is_touching_tile(self, pos, tile): # tile is a rect, pos is a tuple
         # return pos[0] >= tile.topleft[0] and pos[0] <= tile.topright[0] and pos[1] >= tile.topleft[1] and pos[1] <= tile.bottomleft[1]
-        return pos[0] - self.player_size[0] >= tile.topleft[0] and pos[0] + self.player_size[0] <= tile.topright[0] and pos[1] - self.player_size[1] >= tile.topleft[1] and pos[1] + self.player_size[1] <= tile.bottomleft[1]
-        
+        # return pos[0] - self.player_size[0] >= tile.topleft[0] and pos[0] + self.player_size[0] <= tile.topright[0] and pos[1] - self.player_size[1] >= tile.topleft[1] and pos[1] + self.player_size[1] <= tile.bottomleft[1]
+        # if pos[0] - self.player_size[0] >= tile.bottomleft[0] or pos[0] + self.player_size[0] <= tile.bottomright[0]: # x is inside wall
+        #     if pos[1] - self.player_size[1] >= tile.topleft[1] or pos[1] + self.player_size[1] <= tile.bottomleft[1]: # y is inside wall
+        #         return True
+        # return False
+        # center_pos = pos
+        # width = self.player_size[0]
+        # height = self.player_size[1]
+        # w = tile
+        # # self.contains_square(self, pos, self.player_size[0], self.player_size[0], walls):
+        # return center_pos[0] - width >= w.topleft[0] and center_pos[0] + width <= w.topright[0] and center_pos[1] - height >= w.topleft[1] and center_pos[1] + height <= w.bottomleft[1]
+        # return tile.collidepoint(pos)
+        return self.is_overlap(pos, self.player_size[0], self.player_size[1], tile)
+
+
 
     def contains_position(self, tile_list, player_pos):
+        # import pygame
+        # width = self.player_size[0]
+        # height = self.player_size[1]
+        # rect = pygame.Rect(player_pos[0] - width, player_pos[1] - height, width * 2, height * 2)
+
+        # return rect.collidelist(tile_list) != -1
         # size = self.player_size[0] // 2, self.player_size[1] // 2
         for tile in tile_list:
             if self.is_touching_tile(player_pos, tile):
@@ -71,7 +108,7 @@ class AIController:
     def init(self, start, goal, wall_List, player):
         # print(wall_List)
         # self.player_size = player.get_size() // 2
-        self.player_size = player.get_size()[0] // 2, player.get_size()[1] // 2
+        self.player_size = player.get_size()[0] / 2, player.get_size()[1] / 2
         self.a_star(wall_List, start, goal)
 
 
@@ -87,6 +124,7 @@ class AIController:
             if self.contains_position(walls, pos):
                 continue    
             neighbors.append(Node(pos, current_node))
+        print('current_pos ', current_node.pos  ,'neighbors ', len(neighbors))
 
         return neighbors
     

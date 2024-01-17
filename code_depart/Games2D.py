@@ -84,18 +84,42 @@ class App:
     # FONCTION À Ajuster selon votre format d'instruction
     def on_AI_input(self, instruction):
         self.player.set_position(instruction[0], instruction[1]) # TO REMOVE
+        
 
         # deltax = instruction[0] - self.player.x
         # deltay = instruction[1] - self.player.y
 
+
         # if deltax > 0:
-        #     self.move_player_right()   
+        #     self.move_player_right()
+        #     print("RIGHT")
         # elif deltax < 0:
-        #     self.move_player_left() 
+        #     self.move_player_left()
+        #     print("LEFT")
         # elif deltay > 0:
         #     self.move_player_down()
+        #     print("DOWN")
         # elif deltay < 0:
         #     self.move_player_up()
+        #     print("UP")
+
+
+        # deltax = instruction[0] - self.player.x
+        # deltay = instruction[1] - self.player.y
+
+
+        # if deltax > 0:
+        #     self.move_player_left()   
+        #     print("RIGHT")
+        # elif deltax < 0:
+        #     self.move_player_right() 
+        #     print("LEFT")
+        # elif deltay > 0:
+        #     self.move_player_down()
+        #     print("DOWN")
+        # elif deltay < 0:
+        #     self.move_player_up()
+        #     print("UP")
 
         # if instruction == 'RIGHT':
         #     self.move_player_right()
