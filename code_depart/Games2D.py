@@ -39,7 +39,7 @@ class App:
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
 
-        self.ai_controller = AIController(self.player.speed)
+        self.ai_controller = AIController()
 
 
     def on_keyboard_input(self, keys):
@@ -83,12 +83,9 @@ class App:
 
     # FONCTION À Ajuster selon votre format d'instruction
     def on_AI_input(self, instruction):
-        self.player.set_position(instruction[0], instruction[1]) # TO REMOVE
-        
-
+        # self.player.set_position(instruction[0], instruction[1]) # TO REMOVE
         # deltax = instruction[0] - self.player.x
         # deltay = instruction[1] - self.player.y
-
 
         # if deltax > 0:
         #     self.move_player_right()
@@ -102,7 +99,6 @@ class App:
         # elif deltay < 0:
         #     self.move_player_up()
         #     print("UP")
-
 
         # deltax = instruction[0] - self.player.x
         # deltay = instruction[1] - self.player.y
@@ -121,17 +117,18 @@ class App:
         #     self.move_player_up()
         #     print("UP")
 
-        # if instruction == 'RIGHT':
-        #     self.move_player_right()
+        if instruction == 'RIGHT':
+            self.move_player_right()
 
-        # if instruction == 'LEFT':
-        #     self.move_player_left()
+        if instruction == 'LEFT':
+            self.move_player_left()
 
-        # if instruction == 'UP':
-        #     self.move_player_up()
+        if instruction == 'UP':
+            self.move_player_up()
 
-        # if instruction == 'DOWN':
-        #     self.move_player_down()
+        if instruction == 'DOWN':
+            self.move_player_down()
+
 
     def on_collision(self):
         return self.on_wall_collision() or self.on_obstacle_collision() or self.on_door_collision()
@@ -234,7 +231,7 @@ class App:
 
     def on_execute(self):
         self.on_init()
-        self.ai_controller.init(self.maze.start, self.maze.exit, self.maze.wallList, self.player)
+        self.ai_controller.init(self.maze.maze, self.player)
 
         while self._running:
             self._clock.tick(GAME_CLOCK)
@@ -247,7 +244,8 @@ class App:
             keys = pygame.key.get_pressed()
             self.on_keyboard_input(keys)
 
-            instruction = self.ai_controller.play(self.maze.make_perception_list(self.player, self._display_surf), self.player)
+            instruction = self.ai_controller.play(self.maze.make_perception_list(self.player, self._display_surf), self.player, self.maze.tile_size_x, self.maze.tile_size_y)
+            # print(instruction)
             self.on_AI_input(instruction)
 
             if self.on_coin_collision():
