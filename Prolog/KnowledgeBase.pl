@@ -15,8 +15,16 @@ metal(bronze).
 
 
 action([]).
-action([X |Qliste]):- color(X), print(X), action(Qliste).
-action([X |Qliste]):- action(Qliste).
+action([X|Qliste]):- color(X), print(X), action(Qliste).
+action([X|Qliste]):- action(Qliste).
+
+longueur([], 0).
+longueur([_|Qliste], NombreItems):- 
+	longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
+longueur([X|Qliste], 0):- longueur(Qliste, 0).
+
+test()
+
 
 
 
