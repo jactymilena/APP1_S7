@@ -5,6 +5,7 @@ from Player import *
 from Maze import *
 from Constants import *
 
+from AIController import *
 
 class App:
     windowWidth = WIDTH
@@ -37,6 +38,9 @@ class App:
         self.player.set_position(self.maze.start[0], self.maze.start[1])
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
+
+        self.ai_controller = AIController()
+
 
     def on_keyboard_input(self, keys):
         if keys[K_RIGHT] or keys[K_d]:
@@ -90,6 +94,7 @@ class App:
 
         if instruction == 'DOWN':
             self.move_player_down()
+
 
     def on_collision(self):
         return self.on_wall_collision() or self.on_obstacle_collision() or self.on_door_collision()
@@ -192,6 +197,7 @@ class App:
 
     def on_execute(self):
         self.on_init()
+        self.ai_controller.init(self.maze.maze, self.maze.tile_size_x, self.maze.tile_size_y)
 
         while self._running:
             self._clock.tick(GAME_CLOCK)
@@ -203,7 +209,10 @@ class App:
             pygame.event.pump()
             keys = pygame.key.get_pressed()
             self.on_keyboard_input(keys)
-            # self.on_AI_input(instruction)
+
+            instruction = self.ai_controller.play(self.player)
+            self.on_AI_input(instruction)
+
             if self.on_coin_collision():
                 self.score += 1
             if self.on_treasure_collision():
