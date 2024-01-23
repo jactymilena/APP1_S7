@@ -1,0 +1,36 @@
+%% etat de la porte
+%% ENV=['METAL','COLOR1','COLOR2','COlOR3',NULL,NULL,NULL]
+%% ['silver','blue','green','yellow', NULL, NULL, NULL]
+
+action([]).
+action([A,B,C,D,E,F,G|Qliste]):- action(Qliste), print(D).
+
+
+%%si 3 cristaux(...)
+action(Env, Res):-
+    member(not(red),Env), retirer second ;
+    member(blanc,Env), si blanc dernier , retirer dernier;
+    member(blue,Env), plus un blue, retirer dernier blue;
+    retirer premier.
+
+%%4 cristaux
+action(Env, four()):-
+    member(red), plus un red, member(silver,Env), retirer dernier red;
+    member(yellow,Env), dernier yellow, member(not(red)), retirer premier;
+    member(blue,Env), un seul blue, retirer premier;
+    member(yellow,Env), plus un yellow, retirer dernier;
+    retirer le 2e cristal.
+
+%%5 cristaux
+action(Env, five()):-
+    member(black,Env), dernier black, member(gold,Env), retirer le 4e;
+    member(red,Env), un seul red, member(yellow,Env), plus un yellow, retirer premier;
+    member(not(black),Env), retirer le 2e;
+    retirer premier.
+
+%%6 cristaux
+action(Env, six()):-
+    member(not(yellow),Env), member(bronze), retirer 3e;
+    member(yellow,Env), un seul yellow, member(blanc,Env), plus un blanc, retirer 4e;
+    member(not(red),Env), retirer dernier;
+    retirer 4e.
