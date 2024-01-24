@@ -16,9 +16,9 @@ metal(gold).
 metal(bronze).
 
 
-action([]).
-action([X|Qliste]) :- color(X), print(X), action(Qliste).
-action([X|Qliste]) :- action(Qliste).
+% action([]).
+% action([X|Qliste]) :- color(X), print(X), action(Qliste).
+% action([X|Qliste]) :- action(Qliste).
 
 
 longueur([], 0).
@@ -26,24 +26,27 @@ longueur([_|Qliste], NombreItems) :-
     longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
 
 
-cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), print(NombreItems), NombreItems =:= NombreCristaux.
+cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
 
 
-% action(Env, Res):-
-%     % retirer second
-%     longueur(Env, 0, 3),
-%     member(not(red),Env), print('second');
-%     % 
-%     member(blanc,Env), si blanc dernier , retirer dernier;
-%     member(blue,Env), plus un blue, retirer dernier blue;
-%     retirer premier.
+dernier_est_blanc([X, Y, Z, W|Env]) :- W = blanc.
 
-% si 3 cristaux(...)
-% action(Env, Res):-
-%     member(not(red),Env), print('second');
-%     member(blanc,Env), si blanc dernier , print('third');
-%     member(blue,Env), plus un blue, retirer dernier blue;
-%     print('first').
+
+% action(Env, cristal(Res)) :-
+    % cristaux_etat(Env, 3),
+    % (member(red, Env), cristal(second)).
+    % member(blanc,Env), si blanc dernier , print('third');
+    % member(blue,Env), plus un blue, retirer dernier blue;
+    % print('first')).
+
+
+% si 3 cristaux(...
+action(Env) :-
+    cristaux_etat(Env, 3),
+    (not(member(red, Env)), print('second')).
+    % member(blanc,Env), si blanc dernier , print('third');
+    % member(blue,Env), plus un blue, retirer dernier blue;
+    % print('first')).
 
 % 4 cristaux
 % action(Env, four()):-
