@@ -1,6 +1,8 @@
 %% etat de la porte
 %% ENV=['METAL','COLOR1','COLOR2','COlOR3',NULL,NULL,NULL]
-%% ['silver','blue','green','yellow', NULL, NULL, NULL]
+%% ['silver','blue','green','yellow']
+%% ['silver','red','green','yellow', 'black']
+%% ['silver','red','green','yellow', '', '', '']
 
 color(red).
 color(yellow).
@@ -19,17 +21,12 @@ action([X|Qliste]) :- color(X), print(X), action(Qliste).
 action([X|Qliste]) :- action(Qliste).
 
 
-% longueur([], 0).
-% longueur([_|Qliste], NombreItems):- 
-% 	longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
-% longueur([X|Qliste], 0):- longueur(Qliste, 0).
-
 longueur([], 0).
 longueur([_|Qliste], NombreItems) :- 
     longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
-longueur([X|Qliste], 0) :- longueur(Qliste, 0).
 
-trois_cristaux([_|Env]) :- longueur(Env, NombreItems), NombreItems =:= 3.
+
+cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), print(NombreItems), NombreItems =:= NombreCristaux.
 
 
 % action(Env, Res):-
