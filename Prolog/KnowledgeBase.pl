@@ -26,10 +26,17 @@ longueur([_|Qliste], NombreItems) :-
     longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
 
 
+longueur_bleu([], 0).
+longueur_bleu([X|Qliste], NombreItems) :- 
+    X == blue, longueur_bleu(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
+
+longueur_bleu([X|Qliste], NombreItems) :- 
+    X \== blue, longueur_bleu(Qliste, NombreItems).
+
 cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
 
 
-dernier_est_blanc([X, Y, Z, W|Env]) :- W = blanc.
+dernier_est_blanc([X, Y, Z, W|Env]) :- W = white.
 
 
 % action(Env, cristal(Res)) :-
@@ -43,8 +50,9 @@ dernier_est_blanc([X, Y, Z, W|Env]) :- W = blanc.
 % si 3 cristaux(...
 action(Env) :-
     cristaux_etat(Env, 3),
-    (not(member(red, Env)), print('second')).
-    % member(blanc,Env), si blanc dernier , print('third');
+    (not(member(red, Env)), print('second');
+    dernier_est_blanc(Env), print('third')).
+
     % member(blue,Env), plus un blue, retirer dernier blue;
     % print('first')).
 
