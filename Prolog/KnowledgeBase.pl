@@ -18,8 +18,10 @@ metal(bronze).
 
 % Longueur de la liste de cristaux
 longueur([], 0).
-longueur([_|Qliste], NombreItems) :- 
-    longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
+longueur([X|Qliste], NombreItems) :- 
+    longueur(Qliste, NombreItemsQueue), color(X), NombreItems is NombreItemsQueue + 1.
+longueur([X|Qliste], NombreItems) :- 
+    longueur(Qliste, NombreItems), not(color(X)).
 
 % Longueur de la liste de cristaux bleus
 longueur_bleu([], 0).
@@ -42,10 +44,10 @@ dernier_est_blanc([X, Y, Z, W|Env]) :- W = white.
 
 
 % si 3 cristaux(...
-action(Env) :-
+action(Env, Res) :-
     cristaux_etat(Env, 3),
-    (not(member(red, Env)), print('second');
-    dernier_est_blanc(Env), print('third')).
+    (not(member(red, Env)), Res=second, !;
+    dernier_est_blanc(Env), Res=third).
 
     % member(blue,Env), plus un blue, retirer dernier blue;
     % print('first')).
