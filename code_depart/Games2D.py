@@ -84,17 +84,29 @@ class App:
     # FONCTION À Ajuster selon votre format d'instruction
     def on_AI_input(self, instruction):
         if instruction == 'RIGHT':
-            self.move_player_right()
+           self.move_player_right()
 
         if instruction == 'LEFT':
-            self.move_player_left()
+           self.move_player_left()
 
         if instruction == 'UP':
-            self.move_player_up()
+           self.move_player_up()
 
         if instruction == 'DOWN':
-            self.move_player_down()
-
+           self.move_player_down()
+    #def on_AI_input(self, instruction):
+    #    if instruction < 45 | instruction > 315:
+    #        self.move_player_right()
+#
+    #    if instruction < 225 & instruction > 135:
+    #        self.move_player_left()
+#
+    #    if instruction < 135 & instruction > 45:
+    #        self.move_player_up()
+#
+    #    if instruction < 315 & instruction > 225:
+    #        self.move_player_down()
+#
 
     def on_collision(self):
         return self.on_wall_collision() or self.on_obstacle_collision() or self.on_door_collision()
