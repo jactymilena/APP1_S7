@@ -15,22 +15,27 @@ metal(bronze).
 
 
 action([]).
-action([X|Qliste]):- color(X), print(X), action(Qliste).
-action([X|Qliste]):- action(Qliste).
+action([X|Qliste]) :- color(X), print(X), action(Qliste).
+action([X|Qliste]) :- action(Qliste).
+
+
+% longueur([], 0).
+% longueur([_|Qliste], NombreItems):- 
+% 	longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
+% longueur([X|Qliste], 0):- longueur(Qliste, 0).
 
 longueur([], 0).
-longueur([_|Qliste], NombreItems):- 
-	longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
-longueur([X|Qliste], 0):- longueur(Qliste, 0).
+longueur([_|Qliste], NombreItems) :- 
+    longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
+longueur([X|Qliste], 0) :- longueur(Qliste, 0).
 
-test()
+trois_cristaux([_|Env]) :- longueur(Env, NombreItems), NombreItems =:= 3.
 
+%si 3 cristaux(...)
 
-
-
-%%si 3 cristaux(...)
 % action(Env, Res):-
 %     % retirer second
+%     longueur(Env, 0, 3),
 %     member(not(red),Env), print('second');
 %     % 
 %     member(blanc,Env), si blanc dernier , retirer dernier;
