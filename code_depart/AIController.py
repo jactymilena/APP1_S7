@@ -1,3 +1,5 @@
+from LogiqueFloue import *
+
 class Node:
     def __init__(self, pos, parent=None):
         self.pos = pos
@@ -22,12 +24,15 @@ class AIController:
         self.neighbors_pos  = [(0, 1), (1, 0), (0, -1), (-1, 0)] # right, up, down, left
         self.last_position = None
         self.path_positions = []	
+        self.last_direction = 270
+        
 
 
     def init(self, maze, tile_size_x, tile_size_y):
         self.tile_size_x = tile_size_x
         self.tile_size_y = tile_size_y
         self.a_star(maze)
+        self.logique_flou = LogiqueFlou(maze)
 
 
     def get_neighbors(self, maze, current_node):
@@ -132,4 +137,12 @@ class AIController:
         self.last_position = current_position
 
         return self.get_direction(current_position, self.path_positions[self.path_index])
+    
+    def run_logique_flou(self, player):
+
+        instruction = self.logique_flou.run(self.last_direction, player)
+        self.last_direction += instruction
+        if self.last_direction > 360 : 
+            self.last_direction -= 360
+        return self.last_direction
     

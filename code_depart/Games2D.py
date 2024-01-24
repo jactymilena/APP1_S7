@@ -222,7 +222,8 @@ class App:
             keys = pygame.key.get_pressed()
             self.on_keyboard_input(keys)
 
-            instruction = self.ai_controller.play(self.player)
+            #instruction = self.ai_controller.play(self.player)
+            instruction = self.ai_controller.run_logique_flou(self.player)
             self.on_AI_input(instruction)
 
             if self.on_coin_collision():

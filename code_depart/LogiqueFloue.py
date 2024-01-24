@@ -15,10 +15,10 @@ def createFuzzyControllerObstacle():
     #    'mom'     : mean of maximum
     #    'som'     : min of maximum
     #    'lom'     : max of maximum
-    ant1 = ctrl.Antecedent(np.linspace(0, 360, 1000), 'angle_obstacle')
+    ant1 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle')
     #ant2 = ctrl.Antecedent(np.linspace(-1, 1, 1000), 'input2')
-    cons1 = ctrl.Consequent(np.linspace(-180, 180, 1000), 'output1', defuzzify_method='centroid')
-    cons2 = ctrl.Consequent(np.linspace(-1, 1, 1000), 'output2', defuzzify_method='centroid')
+    cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
+    #cons2 = ctrl.Consequent(np.linspace(-1, 1, 1000), 'output2', defuzzify_method='centroid')
 
     # Accumulation (accumulation_method) methods for fuzzy variables:
     #    np.fmax
@@ -26,20 +26,17 @@ def createFuzzyControllerObstacle():
     cons1.accumulation_method = np.fmax
 
     # TODO: Create membership functions
-    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-3, -3, -1, 0])
-    ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 3, 3])
+    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-90, -25, 0, 0])
+    ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 25, 90])
     #ant1['membership3'] = fuzz.trimf(ant1.universe, [-0.1, 0,0.1])
 
     #ant2['membership1'] = fuzz.trapmf(ant1.universe, [-1, -0.5, 0.5, 1])
 
     cons1['tourneGauche'] = fuzz.trimf(cons1.universe, [-90, -45, 0])
     cons1['tourneDroit'] = fuzz.trimf(cons1.universe, [0, 45, 90])
-    
-   # cons1['tourneUp'] = fuzz.trimf(cons1.universe, [140, 180, 230])
-    #cons1['tourneDown'] = fuzz.trimf(cons1.universe, [-45, 0, 45])
 
 
-    cons2['membership1'] = fuzz.trimf(cons1.universe, [-1, 0, 1])
+  #  cons2['membership1'] = fuzz.trimf(cons1.universe, [-1, 0, 1])
 
     # TODO: Define the rules.
     rules = []
@@ -62,12 +59,17 @@ def createFuzzyControllerObstacle():
 
 
 class LogiqueFlou:
-    def __init__(self, player):
+    def __init__(self, maze):
         self.current_position=0
-        self.player = player
+       # self.player = player
         self.angle_joueur = 0
+        self.perception = []
+        self.list_angle_vu_objet = []
+        self.angle_vision_joueur = 0
+        self.maze = maze
+        #self._display_surf = _display_surf
 
-        self.fuzzCtrl = createFuzzyControllerObstacle()
+        self.fuzz_ctrl = createFuzzyControllerObstacle()
 
         # Display rules
         print('------------------------ RULES ------------------------')
@@ -81,36 +83,38 @@ class LogiqueFlou:
         plt.show()
         
 
-        def get_position_player():
-            current_position = self.player.get_position()
-            return current_position
-        
-        def get_rel_distance_obstacle(liste):
-            listeDistance = []
-            for i in liste:
-                listeDistance.append(i.center - get_position_player())
-            return listeDistance
-        
-        def get_obstacle_proche(liste):
-            listeObstacle = get_rel_distance_obstacle(liste)
-            for i, y in listeObstacle:
-                if i < 0 :
-                    #i = i*-1
-                    listeObstacle.remove(i)
-            proche = min(listeObstacle)
-            return proche
-        
-        def get_angle_obstacle(liste):
-            return angle_between(get_position_player, get_obstacle_proche(liste))
-            
-        
-        def run(self):
-            
-            self.fuzz_ctrl.input['angle_obstacle'] = get_angle_obstacle()
-            self.fuzz_ctrl.compute()
-            direction = self.fuzz_ctrl.output['output1']
+    def get_position_player(self, player):
+        current_position = player.get_position()
+        return current_position
+    
+    def get_liste_perception(self, player):
+        return self.maze.make_perception_list(player)
+    
+    def get_angle_between(self, pos_joueur, list_obstacle):
+        list_angle = []
+        for i in list_obstacle:
+            list_angle.append(angle_between(pos_joueur, list_obstacle[i]))
+        return list_angle    
+    
+    def step(self, listePerception, player):
+        angle_entre_perception = self.get_angle_between(self.get_position_player(player), listePerception)
+        angle_relatif_obstacle =[]
+        for i in angle_entre_perception:
+            if (self.angle_vision_joueur - i) < 90 & (self.angle_vision_joueur - i) > -90 :
+                angle_relatif_obstacle.append(self.angle_vision_joueur - i)
 
-            return direction
+        return angle_relatif_obstacle[0]
+    
+    def run(self, last_direction, player):
+        self.angle_vision_joueur = last_direction        
+        observation = self.get_liste_perception(player)
+        wall_list, obstacle_list, item_list, monster_list, door_list = observation
+        
+        
+        self.fuzz_ctrl.input['angle_obstacle'] = self.step(obstacle_list, player)
+        self.fuzz_ctrl.compute()
+        direction = self.fuzz_ctrl.output['output1']        
+        return direction
         
 
 def angle_between(p1, p2):
