@@ -16,28 +16,22 @@ metal(gold).
 metal(bronze).
 
 
-% action([]).
-% action([X|Qliste]) :- color(X), print(X), action(Qliste).
-% action([X|Qliste]) :- action(Qliste).
-
-
+% Longueur de la liste de cristaux
 longueur([], 0).
 longueur([_|Qliste], NombreItems) :- 
     longueur(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
 
-
+% Longueur de la liste de cristaux bleus
 longueur_bleu([], 0).
 longueur_bleu([X|Qliste], NombreItems) :- 
     X == blue, longueur_bleu(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
+longueur_bleu([X|Qliste], NombreItems) :- X \== blue, longueur_bleu(Qliste, NombreItems).
 
-longueur_bleu([X|Qliste], NombreItems) :- 
-    X \== blue, longueur_bleu(Qliste, NombreItems).
-
+% Etat de la porte
 cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
 
-
+% Dernier cristal est blanc
 dernier_est_blanc([X, Y, Z, W|Env]) :- W = white.
-
 
 % action(Env, cristal(Res)) :-
     % cristaux_etat(Env, 3),
