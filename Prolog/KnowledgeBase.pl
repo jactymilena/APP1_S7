@@ -15,6 +15,10 @@ metal(silver).
 metal(gold).
 metal(bronze).
 
+pos(1, first).
+pos(2, second).
+pos(3, third).
+pos(4, fourth).
 
 % Longueur de la liste de cristaux
 longueur([], 0).
@@ -36,6 +40,8 @@ dernier_bleu([X|Qliste], NombreItems, Index) :-
 dernier_bleu([X|Qliste], NombreItems, Index) :- 
     dernier_bleu(Qliste, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1.
 
+dernier_index(Env, Index) :- dernier_bleu(Env, N, I), Index is N-I.
+
 % Etat de la porte (3;4;5;6)
 cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
 
@@ -49,7 +55,7 @@ action(Env, Res) :-
     cristaux_etat(Env, 3),
     (not(member(red, Env)), Res=second, !;
     dernier_est_blanc(Env), Res=third,!; 
-    % member(blue, Env), longueur_couleur(Env, blue, 2), Res=dernier blue,!;   
+    member(blue, Env), longueur_couleur(Env, blue, 2), dernier_index(Env, Index), pos(Index, Res),!;   
     Res=first,!).
 
 % 4 cristaux
