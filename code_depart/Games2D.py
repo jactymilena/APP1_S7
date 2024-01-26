@@ -225,6 +225,7 @@ class App:
                 genetic = Genetic.Genetic(NUM_ATTRIBUTES, POPULATION_SIZE, NBITS)
                 genetic.set_sim_parameters(NUM_GENERATIONS, MUTATION_PROB, CROSSOVER_PROB)
                 genetic.init_pop()
+                flag = 0
 
                 for i in range(NUM_GENERATIONS):
                     genetic.encode_individuals()
@@ -233,7 +234,14 @@ class App:
                     for individu in genetic.cvalues:
                         self.player.set_attributes(individu)
                         fitness_tuple = monster.mock_fight(self.player)
-                        fitness.append(fitness_tuple[1])
+
+                        if (fitness_tuple[0] == 2) or (fitness_tuple[0] == 3) or (fitness_tuple[0] == 4):
+                            fitness.append(fitness_tuple[0] * fitness_tuple[1])
+                        else:
+                            fitness.append(fitness_tuple[1])
+
+                        if fitness_tuple[0] == 4:
+                            flag = flag+1
 
                     genetic.fitness = fitness
                     genetic.eval_fit()
@@ -247,6 +255,8 @@ class App:
                 print('FIGHHHHHHHHHHHHHHHHHHHHHHT')
                 self.player.set_attributes(genetic.bestIndividual)
                 print(monster.mock_fight(self.player))
+                print('Nombre de combat qui a réussi les 4 round:')
+                print(flag)
 
                 if monster.fight(self.player):
                     self.maze.monsterList.remove(monster)
