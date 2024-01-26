@@ -30,33 +30,11 @@ longueur_couleur([X|Qliste], Couleur, NombreItems) :-
 longueur_couleur([X|Qliste], Couleur, NombreItems) :- X \== Couleur, longueur_couleur(Qliste, Couleur, NombreItems).
 
 % Aller chercher le dernier cristal bleu
-% dernier_bleu([], 0, Flag).
-% dernier_bleu([X|Qliste], NombreItems, Flag) :- 
-%     dernier_bleu(Qliste, NombreItemsQueue, Flag), Flag=:=0, NombreItems is NombreItemsQueue + 1, X == blue, Flag is + 1.
-% dernier_bleu([X|Qliste], NombreItems, Flag) :- 
-%     dernier_bleu(Qliste, NombreItemsQueue, Flag), Flag=:=0, NombreItems is NombreItemsQueue + 1, X \== blue.
-
 dernier_bleu([], 0, Index).
 dernier_bleu([X|Qliste], NombreItems, Index) :- 
     dernier_bleu(Qliste, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1, X == blue, Index=NombreItems ,!.
-% dernier_bleu([X|Qliste], NombreItems, Index) :- 
-%     dernier_bleu(Qliste, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1, X \== blue.
-
-
-% dernier_bleu([], 0).
-% dernier_bleu([X|Qliste], NombreItems) :- 
-%     dernier_bleu(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1, X \== blue.
-% dernier_bleu([X|Qliste], NombreItems) :- 
-%     dernier_bleu(Qliste, NombreItemsQueue), NombreItems is NombreItemsQueue + 1, X == blue, !.
-
-
-% dernier_bleu([X|Qliste], NombreItems, DernierBleu) :- 
-%     dernier_bleu(Qliste, NombreItemsQueue, DernierBleu), NombreItems is NombreItemsQueue + 1, X == blue, DernierBleu=NombreItemsQueue.
-
-% dernier_bleu([X|Qliste], DernierBleu) :- 
-%     X == blue, longueur_bleu(Qliste, NombreItemsQueue), NombreItemsQueue == 0, DernierBleu = X.
-% dernier_bleu([X|Qliste], DernierBleu) :- 
-%     dernier_bleu(Qliste, DernierBleu).
+dernier_bleu([X|Qliste], NombreItems, Index) :- 
+    dernier_bleu(Qliste, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1.
 
 % Etat de la porte (3;4;5;6)
 cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
