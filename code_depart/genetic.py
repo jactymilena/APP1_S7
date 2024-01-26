@@ -90,49 +90,17 @@ class Genetic:
         print('Overall best fitness is %f' % self.bestIndividualFitness)
         print('')
 
-    def print_best_individual(self):
-        # Prints the best individual for all of the simulated generations
-        print('Encoded value:')
-        print(self.bestIndividual)
-
-        #print('Decoded value:')
-        #bestIndividual_16bits = np.reshape(self.bestIndividual, newshape=(self.num_params, self.nbits))
-        #print(bin2ufloat(bestIndividual_16bits, self.nbits))
-
     def doSelection(self):
-        # Output:
-        # - PAIRS, a list of two ndarrays [IND1 IND2]  each encoding one member of the pair
-        NUMPAIRS = int(self.pop_size / 2)
+        lowest_value = min(self.fitness)
+        positive_fitness = [fitness - lowest_value for fitness in self.fitness] if lowest_value < 0 else self.fitness
+        probability = positive_fitness / np.sum(positive_fitness)
 
-        lowest_value = 0
-        for fitness in self.fitness:
-            if fitness < lowest_value:
-                lowest_value = fitness
+        idx1 = np.random.choice(np.arange(POPULATION_SIZE), size=NUMPAIRS, replace=True, p=probability)
+        idx2 = np.random.choice(np.arange(POPULATION_SIZE), size=NUMPAIRS, replace=True, p=probability)
 
-        positive_fitness = []
-
-        if lowest_value < 0:
-            for fitness in self.fitness:
-                positive_fitness.append(fitness - lowest_value)
-
-        else:
-            positive_fitness = self.fitness
-
-        sum = np.sum(positive_fitness)
-        probability = []
-
-        for fitness in positive_fitness:
-            probability.append(fitness / sum)
-
-        if (round(np.sum(probability), 6) != 1.0):
-            raise Exception('Probability inside wheel selection incorrect!')
-
-        idx1 = np.random.choice(np.arange(self.pop_size), size=NUMPAIRS, replace=True, p=probability)
-        idx2 = np.random.choice(np.arange(self.pop_size), size=NUMPAIRS, replace=True, p=probability)
-
-        if (PRINT == True):
+        if PRINT:
             print('Wheel Selection')
-            print('Probablitité:')
+            print('Probabilité:')
             print(probability)
             print('Liste d\'index 1')
             print(idx1)
@@ -143,47 +111,18 @@ class Genetic:
         return [self.population[idx1, :], self.population[idx2, :]]
 
     def doCrossover(self, pairs):
-        # Input:
-        # - PAIRS, a list of two ndarrays [IND1 IND2] each encoding one individu of the pair
-        # - CROSSOVER_PROB, the crossover probability.
-        # - CROSSOVER_POINT, a modulo-constraint on the cutting point. For example, to only allow cutting
-        #   every 4 bits, set value to 4.
-        # Output:
-        # - POPULATION, a binary matrix with each row encoding an individual.
-        crossover_point = int(self.nbits * self.num_params / 2)
-        parents1 = pairs[0]
-        parents2 = pairs[1]
+        parents1, parents2 = pairs
 
         new_population = []
-        for index in range(len(parents1)):
-            if (PRINT == True):
-                print('Crossover')
-                print('Maman: ')
-                print(parents1[index])
-                print('Papa: ')
-                print(parents2[index])
+        for parent1, parent2 in zip(parents1, parents2):
 
             if np.random.rand() < self.crossover_prob:
-                if (PRINT == True):
-                    print('Cossover : oui')
-                child1 = np.concatenate((parents1[index][:crossover_point], parents2[index][crossover_point:]))
-                new_population.append(child1)
+                child1 = np.concatenate((parent1[:CROSSOVER_POINT], parent2[CROSSOVER_POINT:]))
+                child2 = np.concatenate((parent2[:CROSSOVER_POINT], parent1[CROSSOVER_POINT:]))
+                new_population.extend([child1, child2])
 
-                child2 = np.concatenate((parents2[index][:crossover_point], parents1[index][crossover_point:]))
-                new_population.append(child2)
-                if (PRINT == True):
-                    print('Bébé1: ')
-                    print(child1)
-                    print('Bébé2: ')
-                    print(child2)
             else:
-                if (PRINT == True):
-                    print('Cossover : non')
-                new_population.append(parents1[index])
-                new_population.append(parents2[index])
-
-            if (PRINT == True):
-                print('')
+                new_population.extend([parent1, parent2])
 
         return np.reshape(new_population, newshape=(self.pop_size, self.num_params * self.nbits))
 
@@ -194,7 +133,7 @@ class Genetic:
         # Output:
         # - POPULATION, the new population.
         for index in range(len(self.population)):
-            if True:#np.random.rand() < self.mutation_prob:
+            if np.random.rand() < self.mutation_prob:
                 if (PRINT == True):
                     print('Mutation: oui')
                     print('Avant mutation:')
@@ -210,41 +149,29 @@ class Genetic:
 
         return self.population
 
+    def doMutation(self):
+        for individual in self.population:
+
+            if np.random.rand() < self.mutation_prob:
+                bit_to_mutate = np.random.randint(self.nbits * self.num_params)
+                individual[bit_to_mutate] ^= 1  # XOR
+
+        return self.population
+
     def new_gen(self):
         pairs = self.doSelection()
         self.population = self.doCrossover(pairs)
-
-        #print('pop')
-        #self.decode_individuals()
-        #print(self.cvalues)
-
         self.doMutation()
         self.current_gen += 1
 
 def int_to_bin(int_list, nbits):
-    int_list = int_list + 1000
-    bin_list = []
-
-    for value in int_list:
-        bin_list.append(bin(value)[2:].zfill(nbits))
-
+    bin_list = [bin(value + 1000)[2:].zfill(nbits) for value in int_list]
     return bin_list
 
 def bin_to_int(binary_matrix):
-    ivalue = []
-    for row in binary_matrix:
-        ivalue.append(int("".join(str(x) for x in row), 2) - 1000)
-
+    ivalue = [int("".join(map(str, row)), 2) - 1000 for row in binary_matrix]
     return ivalue
 
-def binary_list_to_matrix(list):
-    row = POPULATION_SIZE*NUM_ATTRIBUTES
-    column = NBITS
-
-    matrix = [[0] * column for _ in range(row)]
-
-    for i in range(row):
-        for j in range(column):
-            matrix[i][j] = int(list[i][j])
-
+def binary_list_to_matrix(binary_list):
+    matrix = [[int(bit) for bit in row_str] for row_str in binary_list]
     return matrix
