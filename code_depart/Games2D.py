@@ -246,9 +246,6 @@ class App:
 
                             if fitness_tuple[0] == 4:
                                 loser = False
-                                genetic.fitness = fitness
-                                genetic.eval_fit()
-                                genetic.print_progress()
                                 genetic.bestIndividual = individu
 
                         if loser:
