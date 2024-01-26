@@ -1,11 +1,9 @@
+import numpy as np
 from pygame.locals import *
-import pygame
-
 import Genetic
 from Player import *
 from Maze import *
 from Constants import *
-
 from AIController import *
 
 class App:
@@ -36,9 +34,9 @@ class App:
         self.maze.make_maze_wall_list()
         self.maze.make_maze_item_lists()
         self._image_surf = pygame.image.load("assets/Images/knight.png")
-        self.player.set_position(self.maze.start[0], self.maze.start[1])
+        #self.player.set_position(self.maze.start[0], self.maze.start[1])
         # monster config - ne pas suprimer
-        #self.player.set_position(745.0, 264.0)
+        self.player.set_position(745.0, 264.0)
         # monster config end
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
@@ -214,8 +212,8 @@ class App:
             keys = pygame.key.get_pressed()
             self.on_keyboard_input(keys)
 
-            instruction = self.ai_controller.play(self.player)
-            self.on_AI_input(instruction)
+            #instruction = self.ai_controller.play(self.player)
+            #self.on_AI_input(instruction)
 
             if self.on_coin_collision():
                 self.score += 1
@@ -225,17 +223,30 @@ class App:
             monster = self.on_monster_collision()
             if monster:
                 genetic = Genetic.Genetic(NUM_ATTRIBUTES, POPULATION_SIZE, NBITS)
+                genetic.set_sim_parameters(NUM_GENERATIONS, MUTATION_PROB, CROSSOVER_PROB)
                 genetic.init_pop()
-                genetic.encode_individuals()
-                genetic.decode_individuals()
 
-                if False:
-                    print(genetic.cvalues)
-                    print('')
-                    print(genetic.population)
-                    print('')
-                    print(genetic.cvalues)
-                    print('')
+                for i in range(NUM_GENERATIONS):
+                    genetic.encode_individuals()
+
+                    fitness = []
+                    for individu in genetic.cvalues:
+                        self.player.set_attributes(individu)
+                        fitness_tuple = monster.mock_fight(self.player)
+                        fitness.append(fitness_tuple[1])
+
+                    genetic.fitness = fitness
+                    genetic.eval_fit()
+                    genetic.print_progress()
+
+                    genetic.new_gen()
+                    genetic.decode_individuals()
+
+                Genetic.display_generations(genetic)
+
+                print('FIGHHHHHHHHHHHHHHHHHHHHHHT')
+                self.player.set_attributes(genetic.bestIndividual)
+                print(monster.mock_fight(self.player))
 
                 if monster.fight(self.player):
                     self.maze.monsterList.remove(monster)

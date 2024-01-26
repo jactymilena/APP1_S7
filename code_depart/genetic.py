@@ -1,7 +1,24 @@
+from Monster import *
+import matplotlib.pyplot as plt
 from Constants import *
-import random
 import numpy as np
 PRINT = False
+
+
+# Displays the progress of the fitness over all the generations
+def display_generations(ga_sim):
+    fig = plt.figure()
+    n = np.arange(NUM_GENERATIONS)
+    ax = fig.add_subplot(111)
+    ax.plot(n, ga_sim.genBestFitness, '-r', label='Generation Max')
+    ax.plot(n, ga_sim.FitnessRecord, '-b', label='Overall Max')
+    ax.plot(n, ga_sim.genAvgFitness, '--k', label='Generation Average')
+    ax.set_title('Fitness value over generations')
+    ax.set_xlabel('Generation')
+    ax.set_ylabel('Fitness value')
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
 
 class Genetic:
     num_params = 0
@@ -37,9 +54,6 @@ class Genetic:
         self.genAvgFitness = np.zeros((num_generations,))
         self.current_gen = 0
 
-    def set_fit_fun(self, fun):
-        self.fit_fun = fun
-
     def init_pop(self):
         self.cvalues = np.random.randint(-MAX_ATTRIBUTE, MAX_ATTRIBUTE, size=(self.pop_size, self.num_params))
 
@@ -60,12 +74,9 @@ class Genetic:
         self.cvalues = np.reshape(values_1D, (self.pop_size, self.num_params))
 
     def eval_fit(self):
-        # WARNING, number of arguments need to be adjusted if fitness function changes
-        self.fitness = self.fit_fun(self.cvalues[:, 0], self.cvalues[:, 1])
-
         if np.max(self.fitness) > self.bestIndividualFitness:
             self.bestIndividualFitness = np.max(self.fitness)
-            self.bestIndividual = self.population[self.fitness == np.max(self.fitness)][0]
+            self.bestIndividual = self.cvalues[self.fitness == np.max(self.fitness)][0]
 
         self.genBestFitness[self.current_gen] = np.max(self.fitness)
         self.FitnessRecord[self.current_gen] = self.bestIndividualFitness
@@ -84,9 +95,9 @@ class Genetic:
         print('Encoded value:')
         print(self.bestIndividual)
 
-        print('Decoded value:')
-        bestIndividual_16bits = np.reshape(self.bestIndividual, newshape=(self.num_params, self.nbits))
-        print(bin2ufloat(bestIndividual_16bits, self.nbits))
+        #print('Decoded value:')
+        #bestIndividual_16bits = np.reshape(self.bestIndividual, newshape=(self.num_params, self.nbits))
+        #print(bin2ufloat(bestIndividual_16bits, self.nbits))
 
     def doSelection(self):
         # Output:
@@ -183,13 +194,14 @@ class Genetic:
         # Output:
         # - POPULATION, the new population.
         for index in range(len(self.population)):
-            if np.random.rand() < self.mutation_prob:
+            if True:#np.random.rand() < self.mutation_prob:
                 if (PRINT == True):
                     print('Mutation: oui')
                     print('Avant mutation:')
                     print(self.population[index])
+
                 bit_to_mutate = np.random.randint(self.nbits * self.num_params)
-                self.population[index][bit_to_mutate] ^= 1 # XOR
+                self.population[index][bit_to_mutate] ^= 1  # XOR
 
                 if (PRINT == True):
                     print('Après mutation:')
@@ -198,10 +210,14 @@ class Genetic:
 
         return self.population
 
-
     def new_gen(self):
         pairs = self.doSelection()
         self.population = self.doCrossover(pairs)
+
+        #print('pop')
+        #self.decode_individuals()
+        #print(self.cvalues)
+
         self.doMutation()
         self.current_gen += 1
 
@@ -229,6 +245,6 @@ def binary_list_to_matrix(list):
 
     for i in range(row):
         for j in range(column):
-            matrix[i][j] = list[i][j]
+            matrix[i][j] = int(list[i][j])
 
     return matrix
