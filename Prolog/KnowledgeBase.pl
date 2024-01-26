@@ -34,13 +34,13 @@ longueur_couleur([X|Qliste], Couleur, NombreItems) :-
 longueur_couleur([X|Qliste], Couleur, NombreItems) :- X \== Couleur, longueur_couleur(Qliste, Couleur, NombreItems).
 
 % Aller chercher le dernier cristal bleu
-dernier_bleu([], 0, Index).
-dernier_bleu([X|Qliste], NombreItems, Index) :- 
-    dernier_bleu(Qliste, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1, X == blue, Index=NombreItems ,!.
-dernier_bleu([X|Qliste], NombreItems, Index) :- 
-    dernier_bleu(Qliste, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1.
+derniere_couleur([], Couleur, 0, Index).
+derniere_couleur([X|Qliste], Couleur, NombreItems, Index) :- 
+    derniere_couleur(Qliste, Couleur, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1, X == Couleur, Index=NombreItems ,!.
+derniere_couleur([X|Qliste], Couleur, NombreItems, Index) :- 
+    derniere_couleur(Qliste, Couleur, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1.
 
-dernier_index(Env, Index) :- dernier_bleu(Env, N, I), Index is N-I.
+dernier_index(Env, Index) :- derniere_couleur(Env, Couleur, N, I), Index is N-I.
 
 % Etat de la porte (3;4;5;6)
 cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
@@ -50,7 +50,7 @@ dernier_est_blanc([X, Y, Z, W|Env]) :- W = white.
 dernier_est_jaune([X, Y, Z, W, A|Env]) :- A = yellow.
 dernier_est_noir([X, Y, Z, W, A, B|Env]) :- B = black.
 
-% si 3 cristaux(...
+% 3 cristaux
 action(Env, Res) :-
     cristaux_etat(Env, 3),
     (not(member(red, Env)), Res=second, !;
@@ -59,13 +59,13 @@ action(Env, Res) :-
     Res=first,!).
 
 % 4 cristaux
-% action(Env, Res):-
-%     cristaux_etat(Env, 4),
-%     (member(red), plus un red, member(silver, Env), retirer dernier red;
-%     member(yellow, Env), dernier_est_jaune(Env), not(member(red)), Res=first;                                     
-%     member(blue, Env), longueur_couleur(Env, blue, 1), Res=first,!;                                               
-%     member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4)), Res=fourth,!;                      
-%     Res=second,!).                                                                                                
+action(Env, Res):-
+    cristaux_etat(Env, 4),
+    (member(red), plus un red, member(silver, Env), retirer dernier red;
+    member(yellow, Env), dernier_est_jaune(Env), not(member(red)), Res=first;                                     
+    member(blue, Env), longueur_couleur(Env, blue, 1), Res=first,!;                                               
+    member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4)), Res=fourth,!;                      
+    Res=second,!).                                                                                                
 
 % 5 cristaux
 % action(Env, Res):-
