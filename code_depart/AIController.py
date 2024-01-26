@@ -32,7 +32,7 @@ class AIController:
         self.tile_size_x = tile_size_x
         self.tile_size_y = tile_size_y
         self.a_star(maze)
-        self.logique_flou = LogiqueFlou(maze)
+        self.logique_flou = LogiqueFlou()
 
 
     def get_neighbors(self, maze, current_node):
@@ -138,9 +138,9 @@ class AIController:
 
         return self.get_direction(current_position, self.path_positions[self.path_index])
     
-    def run_logique_flou(self, player):
+    def run_logique_flou(self, player, perception):
 
-        instruction = self.logique_flou.run(self.last_direction, player)
+        instruction = self.logique_flou.run(self.last_direction, player, perception)
         self.last_direction += instruction
         if self.last_direction > 360 : 
             self.last_direction -= 360

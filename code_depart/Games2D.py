@@ -219,7 +219,8 @@ class App:
             self.on_keyboard_input(keys)
 
             #instruction = self.ai_controller.play(self.player)
-            instruction = self.ai_controller.run_logique_flou(self.player)
+            perception = self.maze.make_perception_list(self.player, self._display_surf)
+            instruction = self.ai_controller.run_logique_flou(self.player, perception)
             self.on_AI_input(instruction)
 
             if self.on_coin_collision():

@@ -16,6 +16,7 @@ def createFuzzyControllerObstacle():
     #    'som'     : min of maximum
     #    'lom'     : max of maximum
     ant1 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
+    ant2 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle1')
     #ant2 = ctrl.Antecedent(np.linspace(-1, 1, 1000), 'input2')
     cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
     #cons2 = ctrl.Consequent(np.linspace(-1, 1, 1000), 'output2', defuzzify_method='centroid')
@@ -59,14 +60,13 @@ def createFuzzyControllerObstacle():
 
 
 class LogiqueFlou:
-    def __init__(self, maze):
+    def __init__(self):
         self.current_position=0
        # self.player = player
         self.angle_joueur = 0
         self.perception = []
         self.list_angle_vu_objet = []
         self.angle_vision_joueur = 0
-        self.maze = maze
         self.input_obstacle = []
         self.input_mur = []
         self.input_item = []
@@ -89,9 +89,6 @@ class LogiqueFlou:
         current_position = player.get_position()
         return current_position
     
-    def get_liste_perception(self, player):
-        return self.maze.make_perception_list(player)
-    
     def get_angle_between(self, pos_joueur, list_obstacle):
         list_angle = []
         for i in list_obstacle:
@@ -111,21 +108,20 @@ class LogiqueFlou:
 
         return angle_relatif_obstacle
     
-    def associer_input_flou(self, range, list_input):
-        for i in range(range):
+    def associer_input_flou(self, max_range, list_input):
+        for i in range(max_range):
             if i < len(list_input):
-                self.fuzz_ctrl.input['angle_obstacle'+i] = list_input[i]
+                self.fuzz_ctrl.input['angle_obstacle'+str(i)] = list_input[i]
             else:
-                self.fuzz_ctrl.input['angle_obstacle'+i] = -90
+                self.fuzz_ctrl.input['angle_obstacle'+str(i)] = -90
 
     
-    def run(self, last_direction, player):
+    def run(self, last_direction, player, perception):
         self.angle_vision_joueur = last_direction        
-        observation = self.get_liste_perception(player)
-        wall_list, obstacle_list, item_list, monster_list, door_list = observation
+        wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
         angle_obstacle_list = self.step(obstacle_list, player)
-        self.associer_input_flou(2, angle_obstacle_list)
+        self.associer_input_flou(1, angle_obstacle_list)
         
         
         self.fuzz_ctrl.compute()
