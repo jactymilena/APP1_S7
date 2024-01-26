@@ -96,12 +96,16 @@ class App:
     #       self.move_player_down()
     def on_AI_input(self, instruction):
         if instruction < 45 or instruction > 315:
+            print("RIGHT")
             self.move_player_right()
         if instruction < 225 and instruction > 135:
+            print("LEFT")
             self.move_player_left()
         if instruction < 135 and instruction > 45:
+            print("UP")
             self.move_player_up()
         if instruction < 315 and instruction > 225:
+            print("DOWN")
             self.move_player_down()
 
     def on_collision(self):
@@ -218,9 +222,10 @@ class App:
             keys = pygame.key.get_pressed()
             self.on_keyboard_input(keys)
 
-            #instruction = self.ai_controller.play(self.player)
             perception = self.maze.make_perception_list(self.player, self._display_surf)
-            instruction = self.ai_controller.run_logique_flou(self.player, perception)
+            # instruction = self.ai_controller.run_logique_flou(self.player, perception)
+            instruction = self.ai_controller.play(self.player, perception)
+
             self.on_AI_input(instruction)
 
             if self.on_coin_collision():
