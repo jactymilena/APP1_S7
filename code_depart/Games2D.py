@@ -1,6 +1,7 @@
 from pygame.locals import *
 import pygame
 
+import Genetic
 from Player import *
 from Maze import *
 from Constants import *
@@ -36,6 +37,9 @@ class App:
         self.maze.make_maze_item_lists()
         self._image_surf = pygame.image.load("assets/Images/knight.png")
         self.player.set_position(self.maze.start[0], self.maze.start[1])
+        # monster config - ne pas suprimer
+        #self.player.set_position(745.0, 264.0)
+        # monster config end
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
 
@@ -217,8 +221,22 @@ class App:
                 self.score += 1
             if self.on_treasure_collision():
                 self.score += 10
+
             monster = self.on_monster_collision()
             if monster:
+                genetic = Genetic.Genetic(NUM_ATTRIBUTES, POPULATION_SIZE, NBITS)
+                genetic.init_pop()
+                genetic.encode_individuals()
+                genetic.decode_individuals()
+
+                if False:
+                    print(genetic.cvalues)
+                    print('')
+                    print(genetic.population)
+                    print('')
+                    print(genetic.cvalues)
+                    print('')
+
                 if monster.fight(self.player):
                     self.maze.monsterList.remove(monster)
                     self.score += 50
