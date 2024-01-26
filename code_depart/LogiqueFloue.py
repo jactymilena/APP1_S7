@@ -17,10 +17,9 @@ def createFuzzyControllerObstacle():
     #    'lom'     : max of maximum
     ant1 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
     ant2 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle1')
-    #ant2 = ctrl.Antecedent(np.linspace(-1, 1, 1000), 'input2')
-    cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
-    #cons2 = ctrl.Consequent(np.linspace(-1, 1, 1000), 'output2', defuzzify_method='centroid')
 
+    cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
+    
     # Accumulation (accumulation_method) methods for fuzzy variables:
     #    np.fmax
     #    np.multiply
@@ -29,21 +28,19 @@ def createFuzzyControllerObstacle():
     # TODO: Create membership functions
     ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-90, -25, 0, 0])
     ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 25, 90])
-    #ant1['membership3'] = fuzz.trimf(ant1.universe, [-0.1, 0,0.1])
 
-    #ant2['membership1'] = fuzz.trapmf(ant1.universe, [-1, -0.5, 0.5, 1])
+    ant2['obsGauche'] = fuzz.trapmf(ant1.universe, [-90, -25, 0, 0])
+    ant2['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 25, 90])
 
-    cons1['tourneGauche'] = fuzz.trimf(cons1.universe, [-90, -45, 0])
-    cons1['tourneDroit'] = fuzz.trimf(cons1.universe, [0, 45, 90])
+    cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-60, -45, -5])
+    cons1['tourneDroit'] = fuzz.trapmf(cons1.universe, [5, 45, 60, 90])
+    cons1['droit'] = fuzz.trimf(cons1.universe, [-15, 0, 15])
 
-
-  #  cons2['membership1'] = fuzz.trimf(cons1.universe, [-1, 0, 1])
 
     # TODO: Define the rules.
     rules = []
-    #rules.append(ctrl.Rule(antecedent=(ant1['angle_gauche'] & ant2['membership1']), consequent=cons1['membership1']))
-    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] ), consequent=cons1['tourneDroit']))
-    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit']) , consequent=cons1['tourneGauche']))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] | ant2['obsGauche']), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] | ant2['obsDroit']) , consequent=cons1['tourneGauche']))
 
 
 
@@ -122,6 +119,8 @@ class LogiqueFlou:
 
         angle_obstacle_list = self.step(obstacle_list, player)
         self.associer_input_flou(1, angle_obstacle_list)
+      #  self.associer_input_flou(3, self.step(wall_list, player))
+        
         
         
         self.fuzz_ctrl.compute()
