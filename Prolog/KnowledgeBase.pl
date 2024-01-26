@@ -28,7 +28,7 @@ longueur([X|Qliste], NombreItems) :-
     longueur(Qliste, NombreItems), not(color(X)).
 
 % Longueur de la liste de cristaux
-longueur_couleur([],_,0).
+longueur_couleur([] ,_ , 0).
 longueur_couleur([X|Qliste], Couleur, NombreItems) :- 
     X == Couleur, longueur_couleur(Qliste, Couleur, NombreItemsQueue), NombreItems is NombreItemsQueue + 1.
 longueur_couleur([X|Qliste], Couleur, NombreItems) :- X \== Couleur, longueur_couleur(Qliste, Couleur, NombreItems).
@@ -50,6 +50,9 @@ dernier_est_blanc([X, Y, Z, W|Env]) :- W = white.
 dernier_est_jaune([X, Y, Z, W, A|Env]) :- A = yellow.
 dernier_est_noir([X, Y, Z, W, A, B|Env]) :- B = black.
 
+% Plus d'un cristal la liste de cristaux
+au_moins_deux(Env, Couleur) :- longueur_couleur(Env, Couleur, N), N > 1.
+
 % 3 cristaux
 action(Env, Res) :-
     cristaux_etat(Env, 3),
@@ -61,17 +64,17 @@ action(Env, Res) :-
 % 4 cristaux
 action(Env, Res):-
     cristaux_etat(Env, 4),
-    (member(red, Env), (longueur_couleur(Env, red, 2); longueur_couleur(Env, red, 3); longueur_couleur(Env, red, 4)), member(silver, Env), dernier_index(Env, Index, red), pos(Index, Res),!;
+    (member(red, Env), au_moins_deux(Env, red), member(silver, Env), dernier_index(Env, Index, red), pos(Index, Res),!;
     member(yellow, Env), dernier_est_jaune(Env), not(member(red, Env)), Res=first,!;                                     
     member(blue, Env), longueur_couleur(Env, blue, 1), Res=first,!;                                               
-    member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4)), Res=fourth,!;                      
+    member(yellow, Env), au_moins_deux(Env, yellow), Res=fourth,!;                      
     Res=second,!).                                                                                                
 
 % 5 cristaux
 action(Env, Res):-
     cristaux_etat(Env, 5),
     (member(black, Env), dernier_est_noir(Env), member(gold, Env), Res=fourth,!;                                    
-    member(red, Env), longueur_couleur(Env, red, 1), member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4) ; longueur_couleur(Env, yellow, 5)), Res=first,!;
+    member(red, Env), longueur_couleur(Env, red, 1), member(yellow, Env), au_moins_deux(Env, yellow), Res=first,!;
     not(member(black, Env)), Res=second,!;                                                                          
     Res=first,!).                                                                                                
 
@@ -79,6 +82,6 @@ action(Env, Res):-
 action(Env, Res):-
     cristaux_etat(Env, 6),
     (not(member(yellow, Env)), member(bronze, Env), Res=third,!;                                                       
-    member(yellow, Env), longueur_couleur(Env, yellow, 1), member(blanc, Env),(longueur_couleur(Env, white, 2) ; longueur_couleur(Env, white, 3) ; longueur_couleur(Env, white, 4) ; longueur_couleur(Env, white, 5) ; longueur_couleur(Env, white, 6)), Res=fourth,!;                           
+    member(yellow, Env), longueur_couleur(Env, yellow, 1), member(blanc, Env), au_moins_deux(Env, white), Res=fourth,!;                           
     not(member(red, Env)), Res=sixth,!;                                                                             
-    Res=fourth,!).                                                                                                
+    Res=fourth,!).            
