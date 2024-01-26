@@ -56,13 +56,13 @@ class AIController:
         deltay = current_pos[1] - next_pos[1]
 
         if deltax > 0:
-            return "LEFT"
+            return 180
         elif deltax < 0:
-            return "RIGHT"
+            return 0
         elif deltay > 0:
-            return "UP"
+            return 90
         elif deltay < 0:
-            return "DOWN"
+            return 270
         
     
     def setup(self, maze):
@@ -123,7 +123,7 @@ class AIController:
         return int(pixel_pos[0] // self.tile_size_x), int(pixel_pos[1] // self.tile_size_y)
 
 
-    def play(self, player):
+    def play(self, player, perception):
         if(self.path_index >= len(self.path_positions)):
             print("Path completed or not found")
             return
@@ -134,10 +134,20 @@ class AIController:
             # continue to the next position in the path
             self.path_index += 1
 
+        next_direction = self.get_direction(current_position, self.path_positions[self.path_index])
+
+        wall_list, obstacle_list, item_list, monster_list, door_list = perception
+
+        if len(obstacle_list) > 0:
+            next_direction = self.run_logique_flou(player, perception)    
+        else:
+            self.last_direction = next_direction
+            
         self.last_position = current_position
 
-        return self.get_direction(current_position, self.path_positions[self.path_index])
+        return next_direction
     
+
     def run_logique_flou(self, player, perception):
         print(f"last_direction {self.last_direction}")
 
@@ -147,5 +157,6 @@ class AIController:
             self.last_direction -= 360
         if self.last_direction < 0:
             self.last_direction += 360
+
         return self.last_direction
     
