@@ -17,16 +17,8 @@ if __name__ == '__main__':
                 result = prolog_thread.query("[knowledgebase].")
                 print(result)
 
-                result = prolog_thread.query("action(['silver','blue','green','yellow', '', '']).")
-                # result = prolog_thread.query("action(['silver','blue','green','yellow', NULL, NULL, NULL]).")
+                result = prolog_thread.query("action(['silver','blue','red','white', '', ''], Res).")
 
                 print(result)
-
-                # Query the information in the file
-                # result = prolog_thread.query("homme(louis).")
-                # print(result)
-                # # Query the information in the file
-                # result = prolog_thread.query("fils(luc, X).")
-                # print(result)
 
 
