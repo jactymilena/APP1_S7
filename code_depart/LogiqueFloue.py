@@ -105,6 +105,7 @@ class LogiqueFlou:
 
         return angle_relatif_obstacle
     
+    
     def associer_input_flou(self, max_range, list_input):
         for i in range(max_range):
             if i < len(list_input):
@@ -118,7 +119,7 @@ class LogiqueFlou:
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
         angle_obstacle_list = self.step(obstacle_list, player)
-        self.associer_input_flou(1, angle_obstacle_list)
+        self.associer_input_flou(2, angle_obstacle_list)
       #  self.associer_input_flou(3, self.step(wall_list, player))
         
         
