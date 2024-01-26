@@ -144,5 +144,7 @@ class AIController:
         self.last_direction += instruction
         if self.last_direction > 360 : 
             self.last_direction -= 360
+        if self.last_direction < 0:
+            self.last_direction += 360
         return self.last_direction
     

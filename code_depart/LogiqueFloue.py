@@ -18,6 +18,8 @@ def createFuzzyControllerObstacle():
     ant1 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
     ant2 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle1')
 
+  #  ant3 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur0')
+
     cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
     
     # Accumulation (accumulation_method) methods for fuzzy variables:
@@ -28,6 +30,8 @@ def createFuzzyControllerObstacle():
     # TODO: Create membership functions
     ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-90, -25, 0, 0])
     ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 25, 90])
+    ant1['obsGauche_completement'] = fuzz.trapmf(ant1.universe, [-90, -90, -60, -30])
+    ant1['obsDroit_completement'] = fuzz.trapmf(ant1.universe, [30, 60, 90, 90])
 
     ant2['obsGauche'] = fuzz.trapmf(ant1.universe, [-90, -25, 0, 0])
     ant2['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 25, 90])
@@ -41,6 +45,7 @@ def createFuzzyControllerObstacle():
     rules = []
     rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] | ant2['obsGauche']), consequent=cons1['tourneDroit']))
     rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] | ant2['obsDroit']) , consequent=cons1['tourneGauche']))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche_completement'] | ant1['obsDroit_completement']) , consequent=cons1['droit']))
 
 
 
@@ -89,7 +94,7 @@ class LogiqueFlou:
     def get_angle_between(self, pos_joueur, list_obstacle):
         list_angle = []
         for i in list_obstacle:
-            list_angle.append(angle_between(pos_joueur, list_obstacle[i]))
+            list_angle.append(angle_between(pos_joueur, i.center))
         return list_angle    
     
     def step(self, listePerception, player):
@@ -104,7 +109,6 @@ class LogiqueFlou:
                 angle_relatif_obstacle.append(self.angle_vision_joueur - angle)
 
         return angle_relatif_obstacle
-    
     
     def associer_input_flou(self, max_range, list_input):
         for i in range(max_range):

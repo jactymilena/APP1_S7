@@ -95,13 +95,13 @@ class App:
     #    if instruction == 'DOWN':
     #       self.move_player_down()
     def on_AI_input(self, instruction):
-        if instruction < 45 | instruction > 315:
+        if instruction < 45 or instruction > 315:
             self.move_player_right()
-        if instruction < 225 & instruction > 135:
+        if instruction < 225 and instruction > 135:
             self.move_player_left()
-        if instruction < 135 & instruction > 45:
+        if instruction < 135 and instruction > 45:
             self.move_player_up()
-        if instruction < 315 & instruction > 225:
+        if instruction < 315 and instruction > 225:
             self.move_player_down()
 
     def on_collision(self):
