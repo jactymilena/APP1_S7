@@ -139,6 +139,7 @@ class AIController:
         return self.get_direction(current_position, self.path_positions[self.path_index])
     
     def run_logique_flou(self, player, perception):
+        print(f"last_direction {self.last_direction}")
 
         instruction = self.logique_flou.run(self.last_direction, player, perception)
         self.last_direction += instruction
