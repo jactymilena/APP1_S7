@@ -40,7 +40,7 @@ derniere_couleur([X|Qliste], Couleur, NombreItems, Index) :-
 derniere_couleur([X|Qliste], Couleur, NombreItems, Index) :- 
     derniere_couleur(Qliste, Couleur, NombreItemsQueue, Index), NombreItems is NombreItemsQueue + 1.
 
-dernier_index(Env, Index) :- derniere_couleur(Env, Couleur, N, I), Index is N-I.
+dernier_index(Env, Index, Couleur) :- derniere_couleur(Env, Couleur, N, I), Index is N-I.
 
 % Etat de la porte (3;4;5;6)
 cristaux_etat([_|Env], NombreCristaux) :- longueur(Env, NombreItems), NombreItems =:= NombreCristaux.
@@ -55,30 +55,30 @@ action(Env, Res) :-
     cristaux_etat(Env, 3),
     (not(member(red, Env)), Res=second, !;
     dernier_est_blanc(Env), Res=third,!; 
-    member(blue, Env), longueur_couleur(Env, blue, 2), dernier_index(Env, Index), pos(Index, Res),!;   
+    member(blue, Env), longueur_couleur(Env, blue, 2), dernier_index(Env, Index, blue), pos(Index, Res),!;   
     Res=first,!).
 
 % 4 cristaux
 action(Env, Res):-
     cristaux_etat(Env, 4),
-    (member(red), plus un red, member(silver, Env), retirer dernier red;
-    member(yellow, Env), dernier_est_jaune(Env), not(member(red)), Res=first;                                     
+    (member(red, Env), (longueur_couleur(Env, red, 2); longueur_couleur(Env, red, 3); longueur_couleur(Env, red, 4)), member(silver, Env), dernier_index(Env, Index, red), pos(Index, Res),!;
+    member(yellow, Env), dernier_est_jaune(Env), not(member(red, Env)), Res=first,!;                                     
     member(blue, Env), longueur_couleur(Env, blue, 1), Res=first,!;                                               
     member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4)), Res=fourth,!;                      
     Res=second,!).                                                                                                
 
 % 5 cristaux
-% action(Env, Res):-
-%     cristaux_etat(Env, 5),
-%     (member(black, Env), dernier_est_noir(Env), member(gold, Env), Res=fourth;                                    
-%     member(red, Env), longueur_couleur(Env, red, 1), member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4) ; longueur_couleur(Env, yellow, 5)), Res=first;
-%     not(member(black, Env)), Res=second;                                                                          
-%     Res=first,!).                                                                                                
+action(Env, Res):-
+    cristaux_etat(Env, 5),
+    (member(black, Env), dernier_est_noir(Env), member(gold, Env), Res=fourth,!;                                    
+    member(red, Env), longueur_couleur(Env, red, 1), member(yellow, Env), (longueur_couleur(Env, yellow, 2) ; longueur_couleur(Env, yellow, 3) ; longueur_couleur(Env, yellow, 4) ; longueur_couleur(Env, yellow, 5)), Res=first,!;
+    not(member(black, Env)), Res=second,!;                                                                          
+    Res=first,!).                                                                                                
 
 % 6 cristaux
-% action(Env, Res):-
-%     cristaux_etat(Env, 5),
-%     (not(member(yellow, Env)), member(bronze), Res=third;                                                         
-%     member(yellow, Env), longueur_couleur(Env, yellow, 1), member(blanc, Env),(longueur_couleur(Env, white, 2) ; longueur_couleur(Env, white, 3) ; longueur_couleur(Env, white, 4) ; longueur_couleur(Env, white, 5) ; longueur_couleur(Env, white, 6)), Res=fourth;                           
-%     not(member(red, Env)), Res=sixth;                                                                             
-%     Res=fourth,!).                                                                                                
+action(Env, Res):-
+    cristaux_etat(Env, 6),
+    (not(member(yellow, Env)), member(bronze, Env), Res=third,!;                                                       
+    member(yellow, Env), longueur_couleur(Env, yellow, 1), member(blanc, Env),(longueur_couleur(Env, white, 2) ; longueur_couleur(Env, white, 3) ; longueur_couleur(Env, white, 4) ; longueur_couleur(Env, white, 5) ; longueur_couleur(Env, white, 6)), Res=fourth,!;                           
+    not(member(red, Env)), Res=sixth,!;                                                                             
+    Res=fourth,!).                                                                                                
