@@ -140,11 +140,14 @@ class AIController:
 
         if len(obstacle_list) > 0:
             next_direction = self.run_logique_flou(player, perception, next_direction)    
+            print(f"logique flou next_direction {next_direction}")
+        else:
+            print(f"a start next_direction {next_direction}")
         
         self.last_direction = next_direction
         self.last_position = current_position
 
-        print(f"next_direction {next_direction}")
+        # print(f"next_direction {next_direction}")
 
         return next_direction
     

@@ -1,6 +1,5 @@
 import gym
 import time
-import math
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import matplotlib.pyplot as plt
@@ -14,6 +13,12 @@ def createFuzzyControllerObstacle():
     ant3 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur0')
     ant4 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur1')
     ant5 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur2')
+
+    ant6 = ctrl.Antecedent(np.linspace(0, 1.2, 1000), 'dist_obstacle0')
+    ant7 = ctrl.Antecedent(np.linspace(0, 1.2, 1000), 'dist_obstacle1')
+    ant8 = ctrl.Antecedent(np.linspace(0, 1.2, 1000), 'dist_mur0')
+    ant9 = ctrl.Antecedent(np.linspace(0, 1.2, 1000), 'dist_mur1')
+    ant10 = ctrl.Antecedent(np.linspace(0, 1.2, 1000), 'dist_mur2')
 
     cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
 
@@ -42,6 +47,21 @@ def createFuzzyControllerObstacle():
     ant5['murGauche_completement'] = fuzz.trapmf(ant5.universe, [-90, -90, -45, -20])
     ant5['murDroit_completement'] = fuzz.trapmf(ant5.universe, [20, 45, 90, 90])
 
+    ant6['obsProche'] = fuzz.trapmf(ant6.universe, [0, 0, 0.4, 0.7])
+    ant6['obsLoin'] = fuzz.trapmf(ant6.universe, [0.5, 0.8, 1.2, 1.2])
+
+    ant7['obsProche'] = fuzz.trapmf(ant7.universe, [0, 0, 0.4, 0.7])
+    ant7['obsLoin'] = fuzz.trapmf(ant7.universe, [0.5, 0.8, 1.2, 1.2])
+
+    ant8['murProche'] = fuzz.trapmf(ant8.universe, [0, 0, 0.4, 0.7])
+    ant8['murLoin'] = fuzz.trapmf(ant8.universe, [0.5, 0.8, 1.2, 1.2])
+
+    ant9['murProche'] = fuzz.trapmf(ant9.universe, [0, 0, 0.4, 0.7])
+    ant9['murLoin'] = fuzz.trapmf(ant9.universe, [0.5, 0.8, 1.2, 1.2])
+
+    ant10['murProche'] = fuzz.trapmf(ant10.universe, [0, 0, 0.4, 0.7])
+    ant10['murLoin'] = fuzz.trapmf(ant10.universe, [0.5, 0.8, 1.2, 1.2])
+
     cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-90, -60, -5])
     cons1['tourneDroit'] = fuzz.trapmf(cons1.universe, [5, 60, 90, 90])
     cons1['droit'] = fuzz.trimf(cons1.universe, [-15, 0, 15])
@@ -61,6 +81,41 @@ def createFuzzyControllerObstacle():
     rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] | ant4['murGauche'] | ant5['murGauche']), consequent=cons1['tourneDroit']))
     rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] | ant4['murDroit'] | ant5['murDroit']) , consequent=cons1['tourneGauche']))
     rules.append(ctrl.Rule(antecedent=(ant3['murGauche_completement'] | ant3['murDroit_completement'] | ant4['murGauche_completement'] | ant4['murDroit_completement'] | ant5['murGauche_completement'] | ant5['murDroit_completement']) , consequent=cons1['droit']))
+    
+    # Ajout de distances
+    rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] & ant8['murProche']), consequent=cons1['tourneDroit'] % 1.5))
+    rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] & ant8['murProche']), consequent=cons1['tourneGauche'] % 1.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant4['murGauche'] & ant9['murProche']), consequent=cons1['tourneDroit'] % 1.5))
+    rules.append(ctrl.Rule(antecedent=(ant4['murDroit'] & ant9['murProche']), consequent=cons1['tourneGauche'] % 1.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant5['murGauche'] & ant10['murProche']), consequent=cons1['tourneDroit'] % 1.5))
+    rules.append(ctrl.Rule(antecedent=(ant5['murDroit'] & ant10['murProche']), consequent=cons1['tourneGauche'] % 1.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] & ant8['murLoin']), consequent=cons1['tourneGauche'] % 0.5))
+    rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] & ant8['murLoin']), consequent=cons1['tourneDroit'] % 0.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant4['murGauche'] & ant9['murLoin']), consequent=cons1['tourneGauche'] % 0.5))
+    rules.append(ctrl.Rule(antecedent=(ant4['murDroit'] & ant9['murLoin']), consequent=cons1['tourneDroit'] % 0.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant5['murGauche'] & ant10['murLoin']), consequent=cons1['tourneGauche'] % 0.5))
+    rules.append(ctrl.Rule(antecedent=(ant5['murDroit'] & ant10['murLoin']), consequent=cons1['tourneDroit'] % 0.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] & ant6['obsProche']), consequent=cons1['tourneDroit'] % 1.5))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] & ant6['obsProche']), consequent=cons1['tourneGauche'] % 1.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant2['obsGauche'] & ant7['obsProche']), consequent=cons1['tourneDroit'] % 1.5))
+    rules.append(ctrl.Rule(antecedent=(ant2['obsDroit'] & ant7['obsProche']), consequent=cons1['tourneGauche'] % 1.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] & ant6['obsLoin']), consequent=cons1['tourneGauche'] % 0.5))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] & ant6['obsLoin']), consequent=cons1['tourneDroit'] % 0.5))
+
+    rules.append(ctrl.Rule(antecedent=(ant2['obsGauche'] & ant7['obsLoin']), consequent=cons1['tourneGauche'] % 0.5))
+    rules.append(ctrl.Rule(antecedent=(ant2['obsDroit'] & ant7['obsLoin']), consequent=cons1['tourneDroit'] % 0.5))
+
+    # Murs et obstacles
+    rules.append(ctrl.Rule(antecedent=(((ant3['murGauche'] & ant8['murLoin']) | (ant4['murGauche'] & ant9['murLoin']) | (ant5['murGauche'] & ant10['murLoin'])) & ant1['obsDroit']), consequent=cons1['droit']))
+    rules.append(ctrl.Rule(antecedent=(((ant3['murDroit'] & ant8['murLoin']) | (ant4['murDroit'] & ant9['murLoin']) | (ant5['murDroit'] & ant10['murLoin'])) & ant2['obsGauche']), consequent=cons1['droit']))
 
     # Conjunction (and_func) and disjunction (or_func) methods for rules:
     for rule in rules:
@@ -117,9 +172,15 @@ class LogiqueFlou:
         return angle
     
 
+    def objects_distance(self, player, object):
+        return np.sqrt((player[0] - object[0])**2 + (player[1] - object[1])**2)
+
+
     def step(self, liste_perception, player):
         angle_entre_perception = []
+        distances = []
         for perception in liste_perception:
+            distances.append(self.objects_distance(self.get_position_player(player), perception.center))
             angle_entre_perception.append(self.get_angle_between(self.get_position_player(player), perception))
         angles_relatifs = []
 
@@ -128,24 +189,32 @@ class LogiqueFlou:
                 # print(f"angle relatif {self.angle_vision_joueur - angle}")
                 angles_relatifs.append(self.angle_vision_joueur - angle)
 
-        return angles_relatifs
+        return angles_relatifs, distances
     
 
     def associer_input_flou(self, max_range, list_input, input_name):
+        print(f"input name {input_name} list input {list_input}")
+
         for i in range(max_range):
             if i < len(list_input):
                 self.fuzz_ctrl.input[input_name+str(i)] = list_input[i]
             else:
                 self.fuzz_ctrl.input[input_name+str(i)] = 90
+        
 
     
     def run(self, last_direction, next_direction, player, perception):
         self.angle_vision_joueur = last_direction        
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
-        self.associer_input_flou(2, self.step(obstacle_list, player), 'angle_obstacle')
+        angles_relatifs, distances = self.step(obstacle_list, player)
+        self.associer_input_flou(2, angles_relatifs, 'angle_obstacle')
+        self.associer_input_flou(2, distances, 'dist_obstacle')
+
         print(f"nb murs {len(wall_list)}")
-        self.associer_input_flou(3, self.step(wall_list, player), 'angle_mur')
+        angles_relatifs, distances = self.step(wall_list, player)
+        self.associer_input_flou(3, angles_relatifs, 'angle_mur')
+        self.associer_input_flou(3, distances, 'dist_mur')
         
         self.fuzz_ctrl.compute()
         direction = self.fuzz_ctrl.output['output1']        
