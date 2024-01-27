@@ -1,4 +1,4 @@
-import numpy as np
+import Main_Prolog
 from pygame.locals import *
 import Genetic
 from Player import *
@@ -35,9 +35,15 @@ class App:
         self.maze.make_maze_item_lists()
         self._image_surf = pygame.image.load("assets/Images/knight.png")
         #self.player.set_position(self.maze.start[0], self.maze.start[1])
+
         # monster config - ne pas suprimer
-        self.player.set_position(745.0, 264.0)
+        #self.player.set_position(745.0, 264.0)
         # monster config end
+
+        # door config - ne pas suprimer
+        self.player.set_position(223.0, 567.0)
+        # door config end
+
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
 
@@ -280,6 +286,11 @@ class App:
                 self._running = False
                 self._win = True
             self.on_render()
+
+            if self.on_door_collision():
+                state = self.maze.look_at_door(self.player, 4)
+                position = Main_Prolog.find_door_solution(state)
+                self.maze.unlock_door(position)
 
         while self._win:
             for event in pygame.event.get():
