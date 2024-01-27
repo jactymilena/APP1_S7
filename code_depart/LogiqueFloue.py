@@ -77,14 +77,23 @@ def createFuzzyControllerObstacle():
     rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsProche']) & (ant3['murGauche'] & ant8['murLoin'])), consequent=cons1['tourneGauche']))
     rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsProche']) & (ant3['murDroit'] & ant8['murLoin'])), consequent=cons1['tourneDroit']))
 
+    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsProche']) & (ant3['murGauche'] & ant8['murLoin'])), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsProche']) & (ant3['murDroit'] & ant8['murLoin'])), consequent=cons1['tourneGauche']))
+
     rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsLoin']) & (ant3['murGauche'] & ant8['murProche'])), consequent=cons1['tourneDroit'] % 0.5))
     rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsLoin']) & (ant3['murDroit'] & ant8['murProche'])), consequent=cons1['tourneGauche'] % 0.5))
+
+    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsLoin']) & (ant3['murDroit'] & ant8['murProche'])), consequent=cons1['tourneGauche']))
+    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsLoin']) & (ant3['murGauche'] & ant8['murProche'])), consequent=cons1['tourneDroit']))
 
     rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsLoin']) & (ant3['murGauche'] & ant8['murLoin'])), consequent=cons1['droit']))
     rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsLoin']) & (ant3['murDroit'] & ant8['murLoin'])), consequent=cons1['droit']))
 
     rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsLoin']) & (ant3['murDroit'] & ant8['murLoin'])), consequent=cons1['droit']))
     rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsLoin']) & (ant3['murGauche'] & ant8['murLoin'])), consequent=cons1['droit']))
+
+    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & ant6['obsProche']) & (ant3['murGauche'] & ant8['murProche'])), consequent=cons1['tourneGauche']))
+    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & ant6['obsProche']) & (ant3['murDroit'] & ant8['murProche'])), consequent=cons1['tourneDroit']))
 
 
     # # Obstacles
