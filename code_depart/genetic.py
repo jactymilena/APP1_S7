@@ -90,14 +90,6 @@ class Genetic:
         print('Overall best fitness is %f' % self.bestIndividualFitness)
         print('')
 
-    def print_best_individual(self):
-        # Prints the best individual for all of the simulated generations
-        print('Encoded value:')
-        print(self.bestIndividual)
-
-        #print('Decoded value:')
-        #bestIndividual_16bits = np.reshape(self.bestIndividual, newshape=(self.num_params, self.nbits))
-        #print(bin2ufloat(bestIndividual_16bits, self.nbits))
 
     def doSelection(self):
         # Output:
@@ -194,19 +186,14 @@ class Genetic:
         # Output:
         # - POPULATION, the new population.
         for index in range(len(self.population)):
-            if True:#np.random.rand() < self.mutation_prob:
-                if (PRINT == True):
-                    print('Mutation: oui')
-                    print('Avant mutation:')
-                    print(self.population[index])
 
+            if np.random.rand() < self.mutation_prob:
                 bit_to_mutate = np.random.randint(self.nbits * self.num_params)
                 self.population[index][bit_to_mutate] ^= 1  # XOR
 
-                if (PRINT == True):
-                    print('Après mutation:')
-                    print(self.population[index])
-                    print('')
+                # todo: la sum n'est pas bonne, ça retourne la somme des int
+                if sum(self.population[index]) > 2000:
+                    self.population[index] = [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0]
 
         return self.population
 
