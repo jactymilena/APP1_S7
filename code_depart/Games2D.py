@@ -37,11 +37,11 @@ class App:
         #self.player.set_position(self.maze.start[0], self.maze.start[1])
 
         # monster config - ne pas suprimer
-        #self.player.set_position(745.0, 264.0)
+        self.player.set_position(745.0, 264.0)
         # monster config end
 
         # door config - ne pas suprimer
-        self.player.set_position(223.0, 567.0)
+        #self.player.set_position(223.0, 567.0)
         # door config end
 
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
@@ -245,7 +245,7 @@ class App:
                             self.player.set_attributes(individu)
                             fitness_tuple = monster.mock_fight(self.player)
 
-                            if (fitness_tuple[0] == 2) or (fitness_tuple[0] == 3) or (fitness_tuple[0] == 4):
+                            if fitness_tuple[0] > 1:
                                 fitness.append(fitness_tuple[0] * fitness_tuple[1])
                             else:
                                 fitness.append(fitness_tuple[1])
@@ -268,7 +268,7 @@ class App:
                         else:
                             break
 
-                    #Genetic.display_generations(genetic)
+                #Genetic.display_generations(genetic)
 
                 print('FIGHHHHHHHHHHHHHHHHHHHHHHT')
                 self.player.set_attributes(genetic.bestIndividual)
