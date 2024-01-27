@@ -233,8 +233,8 @@ class App:
 
                 while loser:
                     run = run+1
-                    genetic = Genetic.Genetic(NUM_ATTRIBUTES, POPULATION_SIZE, NBITS)
-                    genetic.set_sim_parameters(NUM_GENERATIONS, MUTATION_PROB, CROSSOVER_PROB)
+                    genetic = Genetic.Genetic()
+                    genetic.set_sim_parameters()
                     genetic.init_pop()
 
                     for i in range(NUM_GENERATIONS):

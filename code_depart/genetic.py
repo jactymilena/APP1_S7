@@ -20,57 +20,45 @@ def display_generations(ga_sim):
     plt.show()
 
 class Genetic:
-    num_params = 0
-    pop_size = 0
-    nbits = 0
     population = []
 
-    def __init__(self, num_params, pop_size, nbits):
-        self.num_params = num_params
-        self.pop_size = pop_size
-        self.nbits = nbits
-        self.fitness = np.zeros((self.pop_size, 1))
+    def __init__(self):
+        self.fitness = np.zeros((POPULATION_SIZE, 1))
         self.fit_fun = np.zeros
-        self.cvalues = np.zeros((self.pop_size, num_params))
-        self.num_generations = 1
-        self.mutation_prob = 0
-        self.crossover_prob = 0
+        self.cvalues = np.zeros((POPULATION_SIZE, NUM_ATTRIBUTES))
         self.bestIndividual = []
         self.bestIndividualFitness = -1e10
-        self.genBestFitness = np.zeros((self.num_generations,))
-        self.FitnessRecord = np.zeros((self.num_generations,))
-        self.genAvgFitness = np.zeros((self.num_generations,))
+        self.genBestFitness = np.zeros((NUM_GENERATIONS,))
+        self.FitnessRecord = np.zeros((NUM_GENERATIONS,))
+        self.genAvgFitness = np.zeros((NUM_GENERATIONS,))
         self.current_gen = 0
 
-    def set_sim_parameters(self, num_generations, mutation_prob, crossover_prob):
-        self.num_generations = num_generations
-        self.mutation_prob = mutation_prob
-        self.crossover_prob = crossover_prob
+    def set_sim_parameters(self):
         self.bestIndividual = []
         self.bestIndividualFitness = -1e10
-        self.genBestFitness = np.zeros((num_generations,))
-        self.FitnessRecord = np.zeros((num_generations,))
-        self.genAvgFitness = np.zeros((num_generations,))
+        self.genBestFitness = np.zeros((NUM_GENERATIONS,))
+        self.FitnessRecord = np.zeros((NUM_GENERATIONS,))
+        self.genAvgFitness = np.zeros((NUM_GENERATIONS,))
         self.current_gen = 0
 
     def init_pop(self):
-        self.cvalues = np.random.randint(-MAX_ATTRIBUTE, MAX_ATTRIBUTE, size=(self.pop_size, self.num_params))
+        self.cvalues = np.random.randint(-MAX_ATTRIBUTE, MAX_ATTRIBUTE, size=(POPULATION_SIZE, NUM_ATTRIBUTES))
 
     def encode_individuals(self):
         list_11bits = int_to_bin(self.cvalues.flatten(), NBITS)
         matrix_11bits = binary_list_to_matrix(list_11bits)
 
-        row = int(self.pop_size)
-        column = int(self.nbits * self.num_params)
+        row = int(POPULATION_SIZE)
+        column = int(NBITS * NUM_ATTRIBUTES)
         self.population = np.reshape(matrix_11bits, (row, column))
 
     def decode_individuals(self):
-        row = int(self.pop_size * self.num_params)
-        column = int(self.nbits)
+        row = int(POPULATION_SIZE * NUM_ATTRIBUTES)
+        column = int(NBITS)
         population_11bits = self.population.reshape((row, column))
 
         values_1D = bin_to_int(population_11bits)
-        self.cvalues = np.reshape(values_1D, (self.pop_size, self.num_params))
+        self.cvalues = np.reshape(values_1D, (POPULATION_SIZE, NUM_ATTRIBUTES))
 
     def eval_fit(self):
         if np.max(self.fitness) > self.bestIndividualFitness:
@@ -112,8 +100,8 @@ class Genetic:
         if (round(np.sum(probability), 6) != 1.0):
             raise Exception('Probability inside wheel selection incorrect!')
 
-        idx1 = np.random.choice(np.arange(self.pop_size), size=NUMPAIRS, replace=True, p=probability)
-        idx2 = np.random.choice(np.arange(self.pop_size), size=NUMPAIRS, replace=True, p=probability)
+        idx1 = np.random.choice(np.arange(POPULATION_SIZE), size=NUMPAIRS, replace=True, p=probability)
+        idx2 = np.random.choice(np.arange(POPULATION_SIZE), size=NUMPAIRS, replace=True, p=probability)
 
         if (PRINT == True):
             print('Wheel Selection')
@@ -133,7 +121,7 @@ class Genetic:
 
         new_population = []
         for index in range(len(parents1)):
-            if np.random.rand() < self.crossover_prob:
+            if np.random.rand() < CROSSOVER_PROB:
                 child1 = np.concatenate((parents1[index][:CROSSOVER_POINT], parents2[index][CROSSOVER_POINT:]))
                 new_population.append(child1)
 
@@ -144,13 +132,13 @@ class Genetic:
                 new_population.append(parents1[index])
                 new_population.append(parents2[index])
 
-        return np.reshape(new_population, newshape=(self.pop_size, self.num_params * self.nbits))
+        return np.reshape(new_population, newshape=(POPULATION_SIZE, NUM_ATTRIBUTES * NBITS))
 
     def doMutation(self):
         for index in range(len(self.population)):
-            if True: #np.random.rand() < self.mutation_prob:
+            if np.random.rand() <= MUTATION_PROB:
                 # todo: 2000
-                bit_to_mutate = np.random.randint(self.nbits * self.num_params)
+                bit_to_mutate = np.random.randint(NBITS * NUM_ATTRIBUTES)
                 self.population[index][bit_to_mutate] ^= 1  # XOR
 
         return self.population
