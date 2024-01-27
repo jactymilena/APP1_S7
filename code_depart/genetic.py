@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from Constants import *
 import numpy as np
+
 PRINT = False
 
 
@@ -19,6 +20,7 @@ def display_generations(ga_sim):
     fig.tight_layout()
     plt.show()
 
+
 class Genetic:
     population = []
 
@@ -26,14 +28,6 @@ class Genetic:
         self.fitness = np.zeros((POPULATION_SIZE, 1))
         self.fit_fun = np.zeros
         self.cvalues = np.zeros((POPULATION_SIZE, NUM_ATTRIBUTES))
-        self.bestIndividual = []
-        self.bestIndividualFitness = -1e10
-        self.genBestFitness = np.zeros((NUM_GENERATIONS,))
-        self.FitnessRecord = np.zeros((NUM_GENERATIONS,))
-        self.genAvgFitness = np.zeros((NUM_GENERATIONS,))
-        self.current_gen = 0
-
-    def set_sim_parameters(self):
         self.bestIndividual = []
         self.bestIndividualFitness = -1e10
         self.genBestFitness = np.zeros((NUM_GENERATIONS,))
@@ -149,6 +143,7 @@ class Genetic:
         self.doMutation()
         self.current_gen += 1
 
+
 def int_to_bin(int_list, nbits):
     int_list = int_list + 1000
     bin_list = []
@@ -158,6 +153,7 @@ def int_to_bin(int_list, nbits):
 
     return bin_list
 
+
 def bin_to_int(binary_matrix):
     ivalue = []
     for row in binary_matrix:
@@ -165,8 +161,9 @@ def bin_to_int(binary_matrix):
 
     return ivalue
 
+
 def binary_list_to_matrix(list):
-    row = POPULATION_SIZE*NUM_ATTRIBUTES
+    row = POPULATION_SIZE * NUM_ATTRIBUTES
     column = NBITS
 
     matrix = [[0] * column for _ in range(row)]

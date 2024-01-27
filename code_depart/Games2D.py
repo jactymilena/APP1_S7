@@ -5,6 +5,7 @@ from Player import *
 from Maze import *
 from Constants import *
 from AIController import *
+import AlgoGenetique
 
 class App:
     windowWidth = WIDTH
@@ -228,53 +229,9 @@ class App:
 
             monster = self.on_monster_collision()
             if monster:
-                loser = True
-                run = 0
-
-                while loser:
-                    run = run+1
-                    genetic = Genetic.Genetic()
-                    genetic.set_sim_parameters()
-                    genetic.init_pop()
-
-                    for i in range(NUM_GENERATIONS):
-                        genetic.encode_individuals()
-
-                        fitness = []
-                        for individu in genetic.cvalues:
-                            self.player.set_attributes(individu)
-                            fitness_tuple = monster.mock_fight(self.player)
-
-                            if fitness_tuple[0] > 1:
-                                fitness.append(fitness_tuple[0] * fitness_tuple[1])
-                            else:
-                                fitness.append(fitness_tuple[1])
-
-                            if fitness_tuple[0] == 4:
-                                loser = False
-                                genetic.bestIndividual = individu
-
-                        if loser:
-                            if (i > 300) and (genetic.bestIndividualFitness < 8):
-                                break
-                            genetic.fitness = fitness
-                            genetic.eval_fit()
-
-                            if (i%10 == 0):
-                                genetic.print_progress()
-
-                            genetic.new_gen()
-                            genetic.decode_individuals()
-                        else:
-                            break
-
-                #Genetic.display_generations(genetic)
-
-                print('FIGHHHHHHHHHHHHHHHHHHHHHHT')
-                self.player.set_attributes(genetic.bestIndividual)
-                print(monster.mock_fight(self.player))
-                print('Nombre de run que ça a pris:')
-                print(run)
+                simulation = AlgoGenetique.AlgoGenetique()
+                winner = simulation.Fight_Simulation(monster, self.player)
+                self.player.set_attributes(winner)
 
                 if monster.fight(self.player):
                     self.maze.monsterList.remove(monster)
@@ -305,3 +262,5 @@ class App:
             self.on_death_render()
 
         self.on_cleanup()
+
+
