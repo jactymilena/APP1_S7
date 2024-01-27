@@ -84,8 +84,7 @@ class Maze:
                 elif self.maze[i][j] == EXIT:
                     self.exit = pygame.Rect((j * self.tile_size_x, i * self.tile_size_y), (self.tile_size_x, self.tile_size_y))
                 elif self.maze[i][j] == DOOR:
-                    new_door = pygame.Rect((j * self.tile_size_x, i * self.tile_size_y),
-                                              (self.tile_size_x, self.tile_size_y))
+                    new_door = pygame.Rect((j * self.tile_size_x, i * self.tile_size_y), (self.tile_size_x, self.tile_size_y))
                     self.doorList.append(Door(new_door))
 
     def draw(self, display_surf):

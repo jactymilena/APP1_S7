@@ -105,7 +105,7 @@ class App:
 
 
     def on_collision(self):
-        return self.on_wall_collision() or self.on_obstacle_collision() or self.on_door_collision()
+        return self.on_wall_collision() or self.on_obstacle_collision() #or self.on_door_collision()
 
     def move_player_right(self):
         self.player.moveRight()
