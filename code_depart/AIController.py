@@ -139,7 +139,7 @@ class AIController:
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
         if len(obstacle_list) > 0:
-            next_direction = self.run_logique_flou(player, perception, next_direction)    
+            next_direction, has_obstacle = self.run_logique_flou(player, perception, next_direction)    
             print(f"logique flou next_direction {next_direction}")
         else:
             print(f"a start next_direction {next_direction}")
@@ -155,12 +155,12 @@ class AIController:
     def run_logique_flou(self, player, perception, next_direction):
         print(f"last_direction {self.last_direction}")
 
-        instruction = self.logique_flou.run(self.last_direction, next_direction, player, perception)
+        instruction, has_obstacle = self.logique_flou.run(self.last_direction, next_direction, player, perception)
         next_direction += instruction
         if next_direction > 360 : 
             next_direction -= 360
         if next_direction < 0:
             next_direction += 360
 
-        return next_direction
+        return next_direction, has_obstacle
     
