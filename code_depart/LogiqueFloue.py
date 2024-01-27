@@ -32,35 +32,35 @@ def createFuzzyControllerObstacle():
     ant2['obsGauche'] = fuzz.trapmf(ant2.universe, [-90, -25, 0, 0])
     ant2['obsDroit'] = fuzz.trapmf(ant2.universe, [0, 0, 25, 90])
 
-    ant3['murGauche'] = fuzz.trapmf(ant3.universe, [-40, -30, 0, 0])
-    ant3['murDroit'] = fuzz.trapmf(ant3.universe, [0, 0, 30, 40])
+    ant3['murGauche'] = fuzz.trapmf(ant3.universe, [-40, -25, 0, 0])
+    ant3['murDroit'] = fuzz.trapmf(ant3.universe, [0, 0, 25, 40])
     ant3['murGauche_completement'] = fuzz.trapmf(ant3.universe, [-90, -90, -45, -20])
     ant3['murDroit_completement'] = fuzz.trapmf(ant3.universe, [20, 45, 90, 90])
 
-    ant4['murGauche'] = fuzz.trapmf(ant4.universe, [-40, -30, 0, 0])
-    ant4['murDroit'] = fuzz.trapmf(ant4.universe, [0, 0, 30, 40])
+    ant4['murGauche'] = fuzz.trapmf(ant4.universe, [-40, -25, 0, 0])
+    ant4['murDroit'] = fuzz.trapmf(ant4.universe, [0, 0, 25, 40])
     ant4['murGauche_completement'] = fuzz.trapmf(ant4.universe, [-90, -90, -45, -20])
     ant4['murDroit_completement'] = fuzz.trapmf(ant4.universe, [20, 45, 90, 90])
 
-    ant5['murGauche'] = fuzz.trapmf(ant5.universe, [-40, -30, 0, 0])
-    ant5['murDroit'] = fuzz.trapmf(ant5.universe, [0, 0, 30, 40])
+    ant5['murGauche'] = fuzz.trapmf(ant5.universe, [-40, -25, 0, 0])
+    ant5['murDroit'] = fuzz.trapmf(ant5.universe, [0, 0, 25, 40])
     ant5['murGauche_completement'] = fuzz.trapmf(ant5.universe, [-90, -90, -45, -20])
     ant5['murDroit_completement'] = fuzz.trapmf(ant5.universe, [20, 45, 90, 90])
 
     ant6['obsProche'] = fuzz.trapmf(ant6.universe, [0, 0, 0.4, 0.7])
-    ant6['obsLoin'] = fuzz.trapmf(ant6.universe, [0.5, 0.8, 1.2, 1.2])
+    ant6['obsLoin'] = fuzz.trapmf(ant6.universe, [0.6, 1, 1.5, 1.5])
 
     ant7['obsProche'] = fuzz.trapmf(ant7.universe, [0, 0, 0.4, 0.7])
-    ant7['obsLoin'] = fuzz.trapmf(ant7.universe, [0.5, 0.8, 1.2, 1.2])
+    ant7['obsLoin'] = fuzz.trapmf(ant7.universe, [0.6, 1, 1.5, 1.5])
 
     ant8['murProche'] = fuzz.trapmf(ant8.universe, [0, 0, 0.4, 0.7])
-    ant8['murLoin'] = fuzz.trapmf(ant8.universe, [0.5, 0.8, 1.2, 1.2])
+    ant8['murLoin'] = fuzz.trapmf(ant8.universe, [0.6, 1, 1.5, 1.5])
 
     ant9['murProche'] = fuzz.trapmf(ant9.universe, [0, 0, 0.4, 0.7])
-    ant9['murLoin'] = fuzz.trapmf(ant9.universe, [0.5, 0.8, 1.2, 1.2])
+    ant9['murLoin'] = fuzz.trapmf(ant9.universe, [0.6, 1, 1.5, 1.5])
 
     ant10['murProche'] = fuzz.trapmf(ant10.universe, [0, 0, 0.4, 0.7])
-    ant10['murLoin'] = fuzz.trapmf(ant10.universe, [0.5, 0.8, 1.2, 1.2])
+    ant10['murLoin'] = fuzz.trapmf(ant10.universe, [0.6, 1, 1.5, 1.5])
 
     cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-90, -60, -5])
     cons1['tourneDroit'] = fuzz.trapmf(cons1.universe, [5, 60, 90, 90])
@@ -130,7 +130,6 @@ def createFuzzyControllerObstacle():
 class LogiqueFlou:
     def __init__(self):
         self.current_position=0
-       # self.player = player
         self.angle_joueur = 0
         self.perception = []
         self.list_angle_vu_objet = []
@@ -183,10 +182,12 @@ class LogiqueFlou:
             distances.append(self.objects_distance(self.get_position_player(player), perception.center))
             angle_entre_perception.append(self.get_angle_between(self.get_position_player(player), perception))
         angles_relatifs = []
+        distance_devant = []
 
         for angle in angle_entre_perception:
             if (self.angle_vision_joueur - angle) < 90 and (self.angle_vision_joueur - angle) > -90 :
                 # print(f"angle relatif {self.angle_vision_joueur - angle}")
+                distance_devant.append(distances[angle_entre_perception.index(angle)])
                 angles_relatifs.append(self.angle_vision_joueur - angle)
 
         return angles_relatifs, distances
@@ -200,7 +201,6 @@ class LogiqueFlou:
                 self.fuzz_ctrl.input[input_name+str(i)] = list_input[i]
             else:
                 self.fuzz_ctrl.input[input_name+str(i)] = 90
-        
 
     
     def run(self, last_direction, next_direction, player, perception):
