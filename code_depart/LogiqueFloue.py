@@ -73,8 +73,8 @@ def createFuzzyControllerObstacle():
     rules = []
 
     # 1 mur, 1 obstacle
-    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & (ant6['obsProche'] | ant6['obsCentre'])) & (ant3['murGauche'] & ant8['murProche'])), consequent=cons1['tourneDroit'] % 1.5))
-    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & (ant6['obsProche'] | ant6['obsCentre'])) & (ant3['murDroit'] & ant8['murProche'])), consequent=cons1['tourneGauche'] % 1.5))
+    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & (ant6['obsProche'] | ant6['obsCentre'])) & (ant3['murGauche'] & ant8['murProche'])), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & (ant6['obsProche'] | ant6['obsCentre'])) & (ant3['murDroit'] & ant8['murProche'])), consequent=cons1['tourneGauche']))
 
     rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] & (ant6['obsProche'] | ant6['obsCentre'])) & (ant3['murGauche'] & ant8['murLoin'])), consequent=cons1['tourneGauche']))
     rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] & (ant6['obsProche'] | ant6['obsCentre'])) & (ant3['murDroit'] & ant8['murLoin'])), consequent=cons1['tourneDroit']))
@@ -107,6 +107,26 @@ def createFuzzyControllerObstacle():
     #completement
     rules.append(ctrl.Rule(antecedent=((ant1['obsGauche_completement'] | ant1['obsDroit_completement']) & (ant3['murGauche_completement'] | ant3['murDroit_completement'])), consequent=cons1['droit']))
    # rules.append(ctrl.Rule(antecedent=(ant3['murGauche_completement'] | ant3['murDroit_completement']) , consequent=cons1['droit']))
+    
+    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] | ant1['obsDroit']) & (ant3['murGauche_completement'] | ant3['murDroit_completement'])), consequent=cons1['droit']))
+    rules.append(ctrl.Rule(antecedent=((ant3['murGauche'] | ant3['murDroit']) & (ant1['obsGauche_completement'] | ant1['obsDroit_completement'])), consequent=cons1['droit']))
+
+
+    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] & ant3['murGauche_completement']), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] & ant3['murDroit_completement']), consequent=cons1['tourneGauche']))
+
+    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] & ant3['murDroit_completement']), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] & ant3['murGauche_completement']), consequent=cons1['tourneGauche']))
+
+    rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] & ant1['obsDroit_completement']), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] & ant1['obsGauche_completement']), consequent=cons1['tourneGauche']))
+
+    rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] & ant1['obsGauche_completement']), consequent=cons1['tourneDroit']))
+    rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] & ant1['obsDroit_completement']), consequent=cons1['tourneGauche']))
+
+
+
+
 
     # # Obstacles
     # rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] | ant2['obsGauche']), consequent=cons1['tourneDroit']))
@@ -241,7 +261,7 @@ class LogiqueFlou:
                 self.fuzz_ctrl.input[input_name+str(i)] = default_value
 
     
-    def run(self, last_direction, next_direction, player, perception):
+    def run(self, last_direction, player, perception):
         self.angle_vision_joueur = last_direction        
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
