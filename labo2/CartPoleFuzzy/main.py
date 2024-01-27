@@ -52,22 +52,25 @@ def createFuzzyController():
     # cartVelocity['membership1'] = fuzz.trapmf(cartVelocity.universe, [-1, -0.5, 0.5, 1])
     # cartPosition['membership1'] = fuzz.trapmf(cartPosition.universe, [-1, -0.5, 0.5, 1])
     force['droite'] = fuzz.trimf(force.universe, [0, 0, 10])
-    # force['droit'] = fuzz.trimf(force.universe, [-1, 0, 1])
     force['gauche'] = fuzz.trimf(force.universe, [-10, 0, 0])
-    angle['droite'] = fuzz.trimf(angle.universe, [0, 0, np.pi/2])
-    angle['gauche'] = fuzz.trimf(angle.universe, [-np.pi/2, 0, 0])
+    # force['droit'] = fuzz.trimf(force.universe, [0, 0, 0])
 
-    # ant1['membership1'] = fuzz.trapmf(ant1.universe, [-1, -0.5, 0.5, 1])
-    # ant1['membership2'] = fuzz.trapmf(ant1.universe, [-0.75, -0.5, 0.5, 0.75])
+    # force['gauche'] = fuzz.trapmf(force.universe, [-10, -5, 0, 0])
 
-    # ant2['membership1'] = fuzz.trapmf(ant1.universe, [-1, -0.5, 0.5, 1])
-
-    # cons1['membership1'] = fuzz.trimf(cons1.universe, [-1, 0, 1])
+    # angle['droite'] = fuzz.trimf(angle.universe, [0, 0, np.pi/2])
+    # angle['gauche'] = fuzz.trimf(angle.universe, [-np.pi/2, 0, 0])
+    # angle['droit'] = fuzz.trimf(angle.universe, [0, np.pi/2, np.pi])
+    angle['gauche'] = fuzz.trapmf(angle.universe, [-1, -1, -0.5,0])
+    angle['droit'] = fuzz.trimf(angle.universe, [-0.5, 0, 0.5])
+    angle['droite'] = fuzz.trapmf(angle.universe, [0, 0.5, 1, 1])
+    
 
     # TODO: Define the rules.
     rules = []
     rules.append(ctrl.Rule(antecedent=(angle['droite']), consequent=force['droite']))
     rules.append(ctrl.Rule(antecedent=(angle['gauche']), consequent=force['gauche']))
+    # rules.append(ctrl.Rule(antecedent=(angle['droit']), consequent=force['droit']))
+
 
     # rules.append(ctrl.Rule(antecedent=(force['droit']), consequent=force['gauche']))
     # rules.append(ctrl.Rule(antecedent=(ant1['membership1'] & ant2['membership1']), consequent=cons1['membership1']))
@@ -103,7 +106,7 @@ if __name__ == '__main__':
 
     VERBOSE = False
 
-    for episode in range(10):
+    for episode in range(100):
         print('Episode no.%d' % (episode))
         env.reset()
 
