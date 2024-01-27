@@ -120,6 +120,7 @@ class Maze:
 
     def make_perception_list(self, player_current, display_surf):
         perception_distance = PERCEPTION_RADIUS * max(self.tile_size_x, self.tile_size_y)
+        print(f"perception_distance {perception_distance}")
         perception_left = player_current.x + 0.5 * (player_current.size_x - perception_distance)
         perception_top = player_current.y + 0.5 * (player_current.size_y - perception_distance)
         perception_rect = pygame.Rect(perception_left, perception_top, perception_distance, perception_distance)
