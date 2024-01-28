@@ -44,10 +44,10 @@ def createFuzzyControllerObstacle():
     rules.append(ctrl.Rule(antecedent=(mur_angl['droite']), consequent=cons1['tourneGauche']))
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] & mur_angl['droite']), consequent=cons1['tourneGauche'] % 1.3))
 
-    rules.append(ctrl.Rule(antecedent=(obs_angl['droite_completement']), consequent=cons1['tourneGauche'] % 0.5 ))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['droite_completement']), consequent=cons1['tourneGauche'] % 0.5))
     rules.append(ctrl.Rule(antecedent=(mur_angl['droite_completement']), consequent=cons1['tourneGauche'] % 0.5))
 
-    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche_completement']), consequent=cons1['tourneDroite'] % 0.5 ))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche_completement']), consequent=cons1['tourneDroite'] % 0.5))
     rules.append(ctrl.Rule(antecedent=(mur_angl['gauche_completement']), consequent=cons1['tourneDroite'] % 0.5))
 
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite_completement'] & mur_angl['gauche_completement']), consequent=cons1['droit']))
@@ -94,7 +94,8 @@ class LogiqueFlou:
         
 
     def get_position_player(self, player):
-        current_position = player.get_position()
+        # current_position = player.get_position()
+        current_position = player.get_rect().center
         return current_position
     
     def get_angle_between(self, pos_joueur, obstacle):
