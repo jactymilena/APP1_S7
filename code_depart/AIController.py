@@ -142,7 +142,7 @@ class AIController:
         
         self.last_direction = next_direction
 
-        return next_direction
+        # return next_direction
     
 
     def get_a_star_direction(self, player):
