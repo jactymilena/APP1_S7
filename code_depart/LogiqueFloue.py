@@ -18,18 +18,18 @@ def createFuzzyControllerObstacle():
 
     cons1.accumulation_method = np.fmax
 
-    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-71, -15, -1, 1])
+    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-71, -15, 0, 0])
     ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 15, 71])
-    ant1['obsGauche_completement'] = fuzz.trapmf(ant1.universe, [-90, -90, -80, -70])
-    ant1['obsDroit_completement'] = fuzz.trapmf(ant1.universe, [70, 80, 90, 90])
+    ant1['obsGauche_completement'] = fuzz.trapmf(ant1.universe, [-90, -90, -80, -65])
+    ant1['obsDroit_completement'] = fuzz.trapmf(ant1.universe, [65, 80, 90, 90])
 
     # ant2['obsGauche'] = fuzz.trapmf(ant2.universe, [-90, -25, 0, 0])
     # ant2['obsDroit'] = fuzz.trapmf(ant2.universe, [0, 0, 25, 90])
 
     ant3['murGauche'] = fuzz.trapmf(ant3.universe, [-71, -15, -1, 0])
     ant3['murDroit'] = fuzz.trapmf(ant3.universe, [0, 1, 15, 71])
-    ant3['murGauche_completement'] = fuzz.trapmf(ant3.universe, [-90, -90, -80, -70])
-    ant3['murDroit_completement'] = fuzz.trapmf(ant3.universe, [70, 80, 90, 90])
+    ant3['murGauche_completement'] = fuzz.trapmf(ant3.universe, [-90, -90, -80, -65])
+    ant3['murDroit_completement'] = fuzz.trapmf(ant3.universe, [65, 80, 90, 90])
 
     # ant4['murGauche'] = fuzz.trapmf(ant4.universe, [-40, -25, 0, 0])
     # ant4['murDroit'] = fuzz.trapmf(ant4.universe, [0, 0, 25, 40])
@@ -41,9 +41,9 @@ def createFuzzyControllerObstacle():
     # ant5['murGauche_completement'] = fuzz.trapmf(ant5.universe, [-90, -90, -45, -20])
     # ant5['murDroit_completement'] = fuzz.trapmf(ant5.universe, [20, 45, 90, 90])
 
-    cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-90, -60, -5])
-    cons1['tourneDroit'] = fuzz.trapmf(cons1.universe, [5, 60, 90, 90])
-    cons1['droit'] = fuzz.trimf(cons1.universe, [-15, 0, 15])
+    cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-90, -75, -5])
+    cons1['tourneDroit'] = fuzz.trapmf(cons1.universe, [5, 75, 90, 90])
+    cons1['droit'] = fuzz.trimf(cons1.universe, [-25, 0, 25])
 
 
     # TODO: Define the rules.
