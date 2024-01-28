@@ -16,15 +16,11 @@ def createFuzzyControllerObstacle():
 
     cons1.accumulation_method = np.fmax
 
-    obs_angl['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -15, -1, 1])
-    obs_angl['droite'] = fuzz.trapmf(obs_angl.universe, [0, 1, 15, 71])
-    obs_angl['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -55])
-    obs_angl['droite_completement'] = fuzz.trapmf(obs_angl.universe, [55, 80, 90, 90])
-
-    mur_angl['gauche'] = fuzz.trapmf(mur_angl.universe, [-71, -15, -1, 0])
-    mur_angl['droite'] = fuzz.trapmf(mur_angl.universe, [0, 1, 15, 71])
-    mur_angl['gauche_completement'] = fuzz.trapmf(mur_angl.universe, [-90, -90, -80, -55])
-    mur_angl['droite_completement'] = fuzz.trapmf(mur_angl.universe, [55, 80, 90, 90])
+    for obj in [obs_angl, mur_angl]:
+        obj['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -15, -1, 1])
+        obj['droite'] = fuzz.trapmf(obs_angl.universe, [0, 1, 15, 71])
+        obj['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -55])
+        obj['droite_completement'] = fuzz.trapmf(obs_angl.universe, [55, 80, 89, 90])
 
     next_dir['tourneGauche'] = fuzz.trapmf(next_dir.universe, [-90,-90, -70, -30])
     next_dir['tourneDroite'] = fuzz.trapmf(next_dir.universe, [30, 70, 90, 90])
