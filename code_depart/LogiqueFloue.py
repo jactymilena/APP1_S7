@@ -24,16 +24,16 @@ def createFuzzyControllerObstacle():
 
     cons1.accumulation_method = np.fmax
 
-    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-71, -50, -1, 1])
-    ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 50, 71])
+    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-71, -15, -1, 1])
+    ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 15, 71])
     ant1['obsGauche_completement'] = fuzz.trapmf(ant1.universe, [-90, -90, -80, -70])
     ant1['obsDroit_completement'] = fuzz.trapmf(ant1.universe, [70, 80, 90, 90])
 
     # ant2['obsGauche'] = fuzz.trapmf(ant2.universe, [-90, -25, 0, 0])
     # ant2['obsDroit'] = fuzz.trapmf(ant2.universe, [0, 0, 25, 90])
 
-    ant3['murGauche'] = fuzz.trapmf(ant3.universe, [-71, -50, -1, 0])
-    ant3['murDroit'] = fuzz.trapmf(ant3.universe, [0, 1, 50, 71])
+    ant3['murGauche'] = fuzz.trapmf(ant3.universe, [-71, -15, -1, 0])
+    ant3['murDroit'] = fuzz.trapmf(ant3.universe, [0, 1, 15, 71])
     ant3['murGauche_completement'] = fuzz.trapmf(ant3.universe, [-90, -90, -80, -70])
     ant3['murDroit_completement'] = fuzz.trapmf(ant3.universe, [70, 80, 90, 90])
 

@@ -161,11 +161,15 @@ class AIController:
         instruction, has_obstacle = self.logique_flou.run(self.last_direction, player, perception)
         next_direction = self.last_direction
 
+        print(f"instruction {instruction}")
         next_direction += instruction
         if next_direction > 360 : 
             next_direction -= 360
         if next_direction < 0:
             next_direction += 360
+
+        print(f"instruction convertie {next_direction}")
+        
 
         return next_direction, has_obstacle
     
