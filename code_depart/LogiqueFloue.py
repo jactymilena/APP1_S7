@@ -10,7 +10,6 @@ from Player import *
 def createFuzzyControllerObstacle():
     obs_angl = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
     mur_angl = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur0')
-    next_dir = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'next_direction')
 
     cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
 
@@ -20,11 +19,7 @@ def createFuzzyControllerObstacle():
         obj['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -15, -1, 1])
         obj['droite'] = fuzz.trapmf(obs_angl.universe, [0, 1, 15, 71])
         obj['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -55])
-        obj['droite_completement'] = fuzz.trapmf(obs_angl.universe, [55, 80, 89, 90])
-
-    next_dir['tourneGauche'] = fuzz.trapmf(next_dir.universe, [-90,-90, -70, -30])
-    next_dir['tourneDroite'] = fuzz.trapmf(next_dir.universe, [30, 70, 90, 90])
-    next_dir['droit'] = fuzz.trimf(next_dir.universe, [-45, 0, 45])
+        obj['droite_completement'] = fuzz.trapmf(obs_angl.universe, [55, 80, 90, 90])
 
     cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-90, -60, -5])
     cons1['tourneDroite'] = fuzz.trapmf(cons1.universe, [5, 60, 90, 90])
@@ -37,8 +32,8 @@ def createFuzzyControllerObstacle():
     rules.append(ctrl.Rule(antecedent=(mur_angl['gauche']), consequent=cons1['tourneDroite']))
     rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] & mur_angl['gauche']), consequent=cons1['tourneDroite'] % 1.3))
 
-    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] & mur_angl['droite']), consequent=cons1['tourneDroite'] % 0.3))
-    rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] & mur_angl['gauche']), consequent=cons1['tourneGauche'] % 0.3))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] & mur_angl['droite']), consequent=cons1['tourneDroite'] % 0.5))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] & mur_angl['gauche']), consequent=cons1['tourneGauche'] % 0.5))
 
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite']), consequent=cons1['tourneGauche']))
     rules.append(ctrl.Rule(antecedent=(mur_angl['droite']), consequent=cons1['tourneGauche']))
@@ -52,10 +47,6 @@ def createFuzzyControllerObstacle():
 
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite_completement'] & mur_angl['gauche_completement']), consequent=cons1['droit']))
     rules.append(ctrl.Rule(antecedent=(obs_angl['gauche_completement'] & mur_angl['droite_completement']), consequent=cons1['droit']))
-
-    rules.append(ctrl.Rule(antecedent=(next_dir['tourneGauche']), consequent=cons1['tourneDroite'] % 0.3))
-    rules.append(ctrl.Rule(antecedent=(next_dir['tourneDroite']), consequent=cons1['tourneGauche'] % 0.3))
-    rules.append(ctrl.Rule(antecedent=(next_dir['droit']), consequent=cons1['droit']))
 
 
     # Conjunction (and_func) and disjunction (or_func) methods for rules:
@@ -133,20 +124,23 @@ class LogiqueFlou:
     
 
     def associer_input_flou(self, max_range, list_input, input_name, default_value):
-        print(f"input name {input_name} list input {list_input}")
-
+        # print(f"input name {input_name} list input {list_input}")
+        test = f"--- {input_name} list input"
         for i in range(max_range):
             if i < len(list_input):
                 self.fuzz_ctrl.input[input_name+str(i)] = list_input[i]
+                test += ' ' + str(list_input[i]) + ', '
             else:
                 self.fuzz_ctrl.input[input_name+str(i)] = default_value
+                test += ' ' + str(default_value) + ', '
 
+        print(test)
     
     def run(self, last_direction, last_a_star_direction, player, perception):
         self.angle_vision_joueur = last_direction        
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
-        self.fuzz_ctrl.input['next_direction'] = self.angle_vision_joueur - last_a_star_direction
+        # self.fuzz_ctrl.input['next_direction'] = self.angle_vision_joueur - last_a_star_direction
 
         angles_relatifs = self.step(obstacle_list, player)
         self.associer_input_flou(1, angles_relatifs, 'angle_obstacle', 90)
