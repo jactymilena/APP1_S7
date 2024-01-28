@@ -171,7 +171,7 @@ class AIController:
         next_direction = self.last_direction
 
         # print(f"instruction {instruction}")
-        next_direction += instruction
+        next_direction -= instruction
         if next_direction > 360 : 
             next_direction -= 360
         if next_direction < 0:
