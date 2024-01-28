@@ -8,99 +8,45 @@ import AIController as controller
 from Player import *
 
 def createFuzzyControllerObstacle():
-    ant1 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
-    # ant2 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle1')
-    ant3 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur0')
-    # ant4 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur1')
-    # ant5 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur2')
+    obs_angl = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
+    mur_angl = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur0')
+    next_dir = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'next_direction')
 
     cons1 = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
 
     cons1.accumulation_method = np.fmax
 
-    ant1['obsGauche'] = fuzz.trapmf(ant1.universe, [-71, -15, -1, 1])
-    ant1['obsDroit'] = fuzz.trapmf(ant1.universe, [0, 1, 15, 71])
-    ant1['obsGauche_completement'] = fuzz.trapmf(ant1.universe, [-90, -90, -80, -70])
-    ant1['obsDroit_completement'] = fuzz.trapmf(ant1.universe, [70, 80, 90, 90])
+    obs_angl['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -15, -1, 1])
+    obs_angl['droite'] = fuzz.trapmf(obs_angl.universe, [0, 1, 15, 71])
+    obs_angl['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -70])
+    obs_angl['droite_completement'] = fuzz.trapmf(obs_angl.universe, [70, 80, 90, 90])
 
-    # ant2['obsGauche'] = fuzz.trapmf(ant2.universe, [-90, -25, 0, 0])
-    # ant2['obsDroit'] = fuzz.trapmf(ant2.universe, [0, 0, 25, 90])
+    mur_angl['gauche'] = fuzz.trapmf(mur_angl.universe, [-71, -15, -1, 0])
+    mur_angl['droite'] = fuzz.trapmf(mur_angl.universe, [0, 1, 15, 71])
+    mur_angl['gauche_completement'] = fuzz.trapmf(mur_angl.universe, [-90, -90, -80, -70])
+    mur_angl['droite_completement'] = fuzz.trapmf(mur_angl.universe, [70, 80, 90, 90])
 
-    ant3['murGauche'] = fuzz.trapmf(ant3.universe, [-71, -15, -1, 0])
-    ant3['murDroit'] = fuzz.trapmf(ant3.universe, [0, 1, 15, 71])
-    ant3['murGauche_completement'] = fuzz.trapmf(ant3.universe, [-90, -90, -80, -70])
-    ant3['murDroit_completement'] = fuzz.trapmf(ant3.universe, [70, 80, 90, 90])
-
-    # ant4['murGauche'] = fuzz.trapmf(ant4.universe, [-40, -25, 0, 0])
-    # ant4['murDroit'] = fuzz.trapmf(ant4.universe, [0, 0, 25, 40])
-    # ant4['murGauche_completement'] = fuzz.trapmf(ant4.universe, [-90, -90, -45, -20])
-    # ant4['murDroit_completement'] = fuzz.trapmf(ant4.universe, [20, 45, 90, 90])
-
-    # ant5['murGauche'] = fuzz.trapmf(ant5.universe, [-40, -25, 0, 0])
-    # ant5['murDroit'] = fuzz.trapmf(ant5.universe, [0, 0, 25, 40])
-    # ant5['murGauche_completement'] = fuzz.trapmf(ant5.universe, [-90, -90, -45, -20])
-    # ant5['murDroit_completement'] = fuzz.trapmf(ant5.universe, [20, 45, 90, 90])
+    next_dir['tourneGauche'] = fuzz.trapmf(next_dir.universe, [-90,-90, -70, -30])
+    next_dir['tourneDroite'] = fuzz.trapmf(next_dir.universe, [30, 70, 90, 90])
+    next_dir['droit'] = fuzz.trimf(next_dir.universe, [-45, 0, 45])
 
     cons1['tourneGauche'] = fuzz.trapmf(cons1.universe, [-90,-90, -60, -5])
-    cons1['tourneDroit'] = fuzz.trapmf(cons1.universe, [5, 60, 90, 90])
+    cons1['tourneDroite'] = fuzz.trapmf(cons1.universe, [5, 60, 90, 90])
     cons1['droit'] = fuzz.trimf(cons1.universe, [-15, 0, 15])
 
-
-    # TODO: Define the rules.
     rules = []
 
-
     # Obstacles
-    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] | ant1['obsGauche_completement']) | (ant3['murGauche'] | ant3['murGauche_completement']), consequent=cons1['tourneDroit']))
-    rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] | ant1['obsDroit_completement']) | (ant3['murDroit'] | ant3['murDroit_completement']), consequent=cons1['tourneGauche']))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] | obs_angl['gauche_completement']) | (mur_angl['gauche'] | mur_angl['gauche_completement']), consequent=cons1['tourneDroite']))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | obs_angl['droite_completement']) | (mur_angl['droite'] | mur_angl['droite_completement']), consequent=cons1['tourneGauche']))
     
-    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche'] | ant1['obsGauche_completement']) & (ant3['murDroit'] | ant3['murDroit_completement'])), consequent=cons1['droit']))
-    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit'] | ant1['obsDroit_completement']) & (ant3['murGauche'] | ant3['murGauche_completement'])), consequent=cons1['droit']))
+    rules.append(ctrl.Rule(antecedent=((obs_angl['gauche'] | obs_angl['gauche_completement']) & (mur_angl['droite'] | mur_angl['droite_completement'])), consequent=cons1['tourneDroite']))
+    rules.append(ctrl.Rule(antecedent=((obs_angl['droite'] | obs_angl['droite_completement']) & (mur_angl['gauche'] | mur_angl['gauche_completement'])), consequent=cons1['tourneGauche']))
 
-    rules.append(ctrl.Rule(antecedent=(ant1['obsGauche_completement'] | ant1['obsDroit_completement'] | ant3['murGauche_completement'] | ant3['murDroit_completement'] ), consequent=cons1['droit']))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche_completement'] | obs_angl['droite_completement'] | mur_angl['gauche_completement'] | mur_angl['droite_completement'] | next_dir['droit']), consequent=cons1['droit']))
 
-    rules.append(ctrl.Rule(antecedent=((ant1['obsGauche_completement']) & (ant3['murDroit'])), consequent=cons1['tourneGauche']))
-    rules.append(ctrl.Rule(antecedent=((ant1['obsDroit_completement']) & (ant3['murGauche'])), consequent=cons1['tourneDroit']))
-
-    # Murs
-    # rules.append(ctrl.Rule(antecedent=ant3['murGauche'], consequent=cons1['tourneDroit']))
-    # rules.append(ctrl.Rule(antecedent=ant3['murDroit'] , consequent=cons1['tourneGauche']))
-    # rules.append(ctrl.Rule(antecedent=(ant3['murGauche_completement'] | ant3['murDroit_completement']) , consequent=cons1['droit']))
-    
-    # # Ajout de distances
-    # rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] & ant8['murProche']), consequent=cons1['tourneDroit'] % 1.5))
-    # rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] & ant8['murProche']), consequent=cons1['tourneGauche'] % 1.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant4['murGauche'] & ant9['murProche']), consequent=cons1['tourneDroit'] % 1.5))
-    # rules.append(ctrl.Rule(antecedent=(ant4['murDroit'] & ant9['murProche']), consequent=cons1['tourneGauche'] % 1.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant5['murGauche'] & ant10['murProche']), consequent=cons1['tourneDroit'] % 1.5))
-    # rules.append(ctrl.Rule(antecedent=(ant5['murDroit'] & ant10['murProche']), consequent=cons1['tourneGauche'] % 1.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant3['murGauche'] & ant8['murLoin']), consequent=cons1['tourneGauche'] % 0.5))
-    # rules.append(ctrl.Rule(antecedent=(ant3['murDroit'] & ant8['murLoin']), consequent=cons1['tourneDroit'] % 0.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant4['murGauche'] & ant9['murLoin']), consequent=cons1['tourneGauche'] % 0.5))
-    # rules.append(ctrl.Rule(antecedent=(ant4['murDroit'] & ant9['murLoin']), consequent=cons1['tourneDroit'] % 0.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant5['murGauche'] & ant10['murLoin']), consequent=cons1['tourneGauche'] % 0.5))
-    # rules.append(ctrl.Rule(antecedent=(ant5['murDroit'] & ant10['murLoin']), consequent=cons1['tourneDroit'] % 0.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] & ant6['obsProche']), consequent=cons1['tourneDroit'] % 1.5))
-    # rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] & ant6['obsProche']), consequent=cons1['tourneGauche'] % 1.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant2['obsGauche'] & ant7['obsProche']), consequent=cons1['tourneDroit'] % 1.5))
-    # rules.append(ctrl.Rule(antecedent=(ant2['obsDroit'] & ant7['obsProche']), consequent=cons1['tourneGauche'] % 1.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant1['obsGauche'] & ant6['obsLoin']), consequent=cons1['tourneGauche'] % 0.5))
-    # rules.append(ctrl.Rule(antecedent=(ant1['obsDroit'] & ant6['obsLoin']), consequent=cons1['tourneDroit'] % 0.5))
-
-    # rules.append(ctrl.Rule(antecedent=(ant2['obsGauche'] & ant7['obsLoin']), consequent=cons1['tourneGauche'] % 0.5))
-    # rules.append(ctrl.Rule(antecedent=(ant2['obsDroit'] & ant7['obsLoin']), consequent=cons1['tourneDroit'] % 0.5))
-
-    # # Murs et obstacles
-    # rules.append(ctrl.Rule(antecedent=(((ant3['murGauche'] & ant8['murLoin']) | (ant4['murGauche'] & ant9['murLoin']) | (ant5['murGauche'] & ant10['murLoin'])) & ant1['obsDroit']), consequent=cons1['droit']))
-    # rules.append(ctrl.Rule(antecedent=(((ant3['murDroit'] & ant8['murLoin']) | (ant4['murDroit'] & ant9['murLoin']) | (ant5['murDroit'] & ant10['murLoin'])) & ant2['obsGauche']), consequent=cons1['droit']))
+    rules.append(ctrl.Rule(antecedent=((obs_angl['gauche_completement']) & (mur_angl['droite']) | next_dir['tourneDroite']), consequent=cons1['tourneGauche']))
+    rules.append(ctrl.Rule(antecedent=((obs_angl['droite_completement']) & (mur_angl['gauche']) | next_dir['tourneGauche']), consequent=cons1['tourneDroite']))
 
     # Conjunction (and_func) and disjunction (or_func) methods for rules:
     for rule in rules:
@@ -152,7 +98,7 @@ class LogiqueFlou:
             if obstacle.center[1] < pos_joueur[1]:
                 angle += 360
 
-        print(f"angle entre joueur et obstacle {angle}")
+        # print(f"angle entre joueur et obstacle {angle}")
         return angle
     
 
@@ -185,9 +131,11 @@ class LogiqueFlou:
                 self.fuzz_ctrl.input[input_name+str(i)] = default_value
 
     
-    def run(self, last_direction, player, perception):
+    def run(self, last_direction, last_a_star_direction, player, perception):
         self.angle_vision_joueur = last_direction        
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
+
+        self.fuzz_ctrl.input['next_direction'] = self.angle_vision_joueur - last_a_star_direction
 
         angles_relatifs = self.step(obstacle_list, player)
         self.associer_input_flou(1, angles_relatifs, 'angle_obstacle', 90)

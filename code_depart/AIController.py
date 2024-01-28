@@ -25,6 +25,7 @@ class AIController:
         self.last_position = None
         self.path_positions = []	
         self.last_direction = 270
+        self.last_a_star_direction = 0
         
 
 
@@ -103,6 +104,7 @@ class AIController:
             # check if goal achieved
             if current_node.pos == self.goal_node.pos:
                 self.goal_achieved(current_node)
+                self.last_a_star_direction = self.get_direction(self.start_node.pos, self.path_positions[self.path_index])
                 break
 
             neighbors = self.get_neighbors(maze, current_node)
@@ -123,7 +125,29 @@ class AIController:
         return int(pixel_pos[0] // self.tile_size_x), int(pixel_pos[1] // self.tile_size_y)
 
 
+
     def play(self, player, perception):
+        wall_list, obstacle_list, item_list, monster_list, door_list = perception
+
+
+        has_obstacle = False
+        logique_direction = None
+        if len(obstacle_list) > 0:
+            logique_direction, has_obstacle = self.run_logique_flou(player, perception)    
+        else:
+            self.get_a_star_direction(player)
+
+        next_direction = logique_direction if has_obstacle else self.last_a_star_direction
+        
+        print(f"a_star_direction {self.last_a_star_direction}")
+        # print(f"logique_direction {logique_direction}")
+        print(f"next_direction {next_direction}")
+        
+        self.last_direction = next_direction
+
+        return next_direction
+    
+    def get_a_star_direction(self, player):
         if(self.path_index >= len(self.path_positions)):
             print("Path completed or not found")
             return
@@ -133,42 +157,27 @@ class AIController:
         if self.last_position is not None and self.last_position != current_position:
             # continue to the next position in the path
             self.path_index += 1
+            print(f"path_index {self.path_index} current_position {current_position}, next_position {self.path_positions[self.path_index]}")
 
         a_star_direction = self.get_direction(current_position, self.path_positions[self.path_index])
-
-        wall_list, obstacle_list, item_list, monster_list, door_list = perception
-
-        has_obstacle = False
-        logique_direction = None
-        if len(obstacle_list) > 0:
-            logique_direction, has_obstacle = self.run_logique_flou(player, perception)    
-        
-        next_direction = logique_direction if has_obstacle else a_star_direction
-        
-        print(f"a_star_direction {a_star_direction}")
-        print(f"logique_direction {logique_direction}")
-        print(f"next_direction {next_direction}")
-        
-        self.last_direction = next_direction
+        self.last_a_star_direction = a_star_direction
         self.last_position = current_position
 
-        return next_direction
-    
 
     def run_logique_flou(self, player, perception):
         print(f"last_direction {self.last_direction}")
 
-        instruction, has_obstacle = self.logique_flou.run(self.last_direction, player, perception)
+        instruction, has_obstacle = self.logique_flou.run(self.last_direction, self.last_a_star_direction, player, perception)
         next_direction = self.last_direction
 
-        print(f"instruction {instruction}")
+        # print(f"instruction {instruction}")
         next_direction += instruction
         if next_direction > 360 : 
             next_direction -= 360
         if next_direction < 0:
             next_direction += 360
 
-        print(f"instruction convertie {next_direction}")
+        # print(f"instruction convertie {next_direction}")
         
 
         return next_direction, has_obstacle
