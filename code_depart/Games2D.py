@@ -226,7 +226,7 @@ class App:
             perception = self.maze.make_perception_list(self.player, self._display_surf)
             #instruction = self.ai_controller.run_logique_flou(self.player, perception)
             instruction = self.ai_controller.play(self.player, perception)
-            #self.ai_controller.play(self.player, perception)
+            # self.ai_controller.play(self.player, perception)
 
             self.on_AI_input(instruction)
 
