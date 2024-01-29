@@ -23,13 +23,16 @@ class AIController:
         self.path_index = 0
         self.neighbors_pos  = [(0, 1), (1, 0), (0, -1), (-1, 0)] # right, up, down, left
         self.last_position = None
-        self.path_positions = []	
+        self.path_positions = []
+        self.temp_goal_position = None # temporary goal position for the player	
 
 
     def init(self, maze, tile_size_x, tile_size_y):
         self.tile_size_x = tile_size_x
         self.tile_size_y = tile_size_y
         self.a_star(maze)
+        self.path_index = 0
+        self.temp_goal_position = self.path_positions[0]
 
 
     def get_neighbors(self, maze, current_node):
@@ -117,7 +120,11 @@ class AIController:
 
 
     def pixel_to_tile_pos(self, pixel_pos):
-        return int(pixel_pos[0] // self.tile_size_x), int(pixel_pos[1] // self.tile_size_y)
+        return int(pixel_pos[0] // (self.tile_size_x / 3)), int(pixel_pos[1] // (self.tile_size_y / 3))
+    
+
+    def tile_pos_to_center_pos(self, tile_pos):
+        return ((tile_pos[0] * 3) + 1), ((tile_pos[1] * 3) + 1)
 
 
     def play(self, player, perception):
@@ -133,16 +140,16 @@ class AIController:
             print("Path completed or not found")
             return
         
-        current_position = self.pixel_to_tile_pos(player.get_position())
+        temp_center_pos = self.tile_pos_to_center_pos(self.temp_goal_position)
+        curr_center_pos = self.pixel_to_tile_pos(player.get_rect().center)
         
-        if self.last_position is not None and self.last_position != current_position:
-            # continue to the next position in the path
-            self.path_index += 1
-
-        self.last_position = current_position
+        if self.temp_goal_position is not None:
+            if temp_center_pos == curr_center_pos:
+                self.path_index += 1
+                self.temp_goal_position = self.path_positions[self.path_index]
 
         result = {}
-        result[DIRECTION] = self.get_direction(current_position, self.path_positions[self.path_index])
+        result[DIRECTION] = self.get_direction(curr_center_pos, temp_center_pos)
 
         return result
     
