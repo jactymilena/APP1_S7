@@ -1,6 +1,5 @@
 import Main_Prolog
 from pygame.locals import *
-import Genetic
 from Player import *
 from Maze import *
 from Constants import *
@@ -35,15 +34,11 @@ class App:
         self.maze.make_maze_wall_list()
         self.maze.make_maze_item_lists()
         self._image_surf = pygame.image.load("assets/Images/knight.png")
-        #self.player.set_position(self.maze.start[0], self.maze.start[1])
+        self.player.set_position(self.maze.start[0], self.maze.start[1])
 
-        # monster config - ne pas suprimer
-        self.player.set_position(745.0, 264.0)
+        # monster config -  A SUPPRIMER PLUS TARD
+        # self.player.set_position(745.0, 264.0)
         # monster config end
-
-        # door config - ne pas suprimer
-        #self.player.set_position(223.0, 567.0)
-        # door config end
 
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
@@ -92,6 +87,11 @@ class App:
 
     # FONCTION À Ajuster selon votre format d'instruction
     def on_AI_input(self, instruction):
+        if instruction == 'DOOR':
+            state = self.maze.look_at_door(self.player, 4)
+            position = Main_Prolog.find_door_solution(state)
+            self.maze.unlock_door(position)
+
         if instruction == 'RIGHT':
             self.move_player_right()
 
@@ -106,7 +106,7 @@ class App:
 
 
     def on_collision(self):
-        return self.on_wall_collision() or self.on_obstacle_collision() #or self.on_door_collision()
+        return self.on_wall_collision() or self.on_door_collision()#or self.on_obstacle_collision() #or 
 
     def move_player_right(self):
         self.player.moveRight()
@@ -219,8 +219,9 @@ class App:
             keys = pygame.key.get_pressed()
             self.on_keyboard_input(keys)
 
-            #instruction = self.ai_controller.play(self.player)
-            #self.on_AI_input(instruction)
+            perception = self.maze.make_perception_list(self.player, self._display_surf)
+            instruction = self.ai_controller.play(self.player, perception)
+            self.on_AI_input(instruction)
 
             if self.on_coin_collision():
                 self.score += 1
@@ -243,11 +244,6 @@ class App:
                 self._running = False
                 self._win = True
             self.on_render()
-
-            if self.on_door_collision():
-                state = self.maze.look_at_door(self.player, 4)
-                position = Main_Prolog.find_door_solution(state)
-                self.maze.unlock_door(position)
 
         while self._win:
             for event in pygame.event.get():

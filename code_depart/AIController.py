@@ -118,7 +118,13 @@ class AIController:
         return int(pixel_pos[0] // self.tile_size_x), int(pixel_pos[1] // self.tile_size_y)
 
 
-    def play(self, player):
+    def play(self, player, perception):
+        wall_list, obstacle_list, item_list, monster_list, door_list = perception
+        
+        if len(door_list) > 0:
+            return 'DOOR'
+        
+
         if(self.path_index >= len(self.path_positions)):
             print("Path completed or not found")
             return
