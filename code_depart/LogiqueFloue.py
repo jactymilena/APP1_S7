@@ -88,20 +88,10 @@ class LogiqueFlou:
         
 
     def get_position_player(self, player):
-        current_position = player.get_position()
+        current_position = player.get_rect().center
         return current_position
     
-    def get_angle_between(self, pos_joueur, obstacle):
-        angle = angle_between(obstacle.center, pos_joueur)
 
-        if obstacle.center[0] < pos_joueur[0]:
-            angle += 180
-        elif obstacle.center[0] > pos_joueur[0]:
-            if obstacle.center[1] < pos_joueur[1]:
-                angle += 360
-
-        #print(f"angle entre joueur et obstacle {angle}")
-        return angle
     
 
     def objects_distance(self, player, object):
@@ -135,7 +125,7 @@ class LogiqueFlou:
 
     
     def run(self, last_direction, player, perception):
-        self.angle_vision_joueur = last_direction        
+        self.angle_vision_joueur = last_direction
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
 
         angles_relatifs = self.step(obstacle_list, player)
@@ -158,15 +148,27 @@ class LogiqueFlou:
             has_obstacle = True
         return direction, has_obstacle
     
-    
-def angle_between(p1, p2):
-    angle_rad = np.arctan2(p2[1] - p1[1], p2[0] - p1[0])
+    def get_angle_between(self, pos_joueur, obstacle):
+        angle = self.angle_between(obstacle.center, pos_joueur)
+        return angle
 
-    if angle_rad < 0:
-        angle_rad += 2 * np.pi
+    def angle_between(self, p1, p2):
+        angle_rad = np.arctan2(p2[1] - p1[1], p2[0] - p1[0])
+        angle_degree = np.degrees(angle_rad)
 
-    print('Angle pure et dure entre obj et joueur')
-    print(np.rad2deg(angle_rad))
-    print('')
+        # angle entre paint
+        # Est = 0
+        # Nord = -90
+        # Ouest = -180
+        # Sud = 90
+        # print('Angle pure et dure entre obj et joueur')
+        # print(angle_degree)
+        # print('')
 
-    return np.rad2deg(angle_rad)
+        if angle_degree < 0:
+            angle_degree = angle_degree + 360
+
+        # angle devient entre 0 et 360
+        print(angle_degree)
+
+        return angle_degree

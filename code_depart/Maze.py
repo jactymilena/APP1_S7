@@ -145,6 +145,12 @@ class Maze:
         #pygame.draw.rect(display_surf, GREEN, perception_rect)
         #pygame.draw.rect(display_surf, GREEN, perception_rect, width=0)
         #pygame.display.flip()
+
+        x, y = player_current.get_rect().center
+        player_rect = pygame.Rect(x, y, 5, 5)
+        pygame.draw.rect(display_surf, GREEN, player_rect, width=0)
+        pygame.display.flip()
+
         # print([wall_list, obstacle_list, item_list, monster_list])
         return [wall_list, obstacle_list, item_list, monster_list, door_list]
 
