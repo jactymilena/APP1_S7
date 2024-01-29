@@ -96,18 +96,41 @@ class App:
     #    if instruction == 'DOWN':
     #       self.move_player_down()
     def on_AI_input(self, instruction):
-        if instruction < 45 or instruction > 315:
+        if instruction <= 22.5 or instruction >= 337.5:
             print("RIGHT")
             self.move_player_right()
-        if instruction < 225 and instruction > 135:
-            print("LEFT")
-            self.move_player_left()
-        if instruction < 135 and instruction > 45:
+
+        elif 67.5 >= instruction >= 22.5:
+            print("UP-RIGHT")
+            self.move_player_right()
+            self.move_player_up()
+
+        elif 112.5 >= instruction >= 67.5:
             print("UP")
             self.move_player_up()
-        if instruction < 315 and instruction > 225:
+
+        elif 157.5 >= instruction >= 112.5:
+            print("UP-LEFT")
+            self.move_player_left()
+            self.move_player_up()
+
+        elif 202.5 >= instruction >= 157.5:
+            print("LEFT")
+            self.move_player_left()
+
+        elif 247.5 >= instruction >= 202.5:
+            print("DOWN-LEFT")
+            self.move_player_down()
+            self.move_player_left()
+
+        elif 292.5 >= instruction >= 247.5:
             print("DOWN")
             self.move_player_down()
+
+        elif 337.5 >= instruction >= 292.5:
+            print("DOWN-RIGHT")
+            self.move_player_down()
+            self.move_player_right()
 
     def on_collision(self):
         return self.on_wall_collision() or self.on_obstacle_collision() or self.on_door_collision()

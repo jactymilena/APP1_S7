@@ -47,15 +47,15 @@ def createFuzzyControllerObstacle():
 
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | mur_angl['droite']), consequent=action['gauche']))
 
-    rules.append(ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
-                           consequent=action['tout_droit']))
-    rules.append(ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
-                           consequent=action['tout_droit']))
-    
+    rules.append(
+        ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
+                  consequent=action['tout_droit']))
+    rules.append(
+        ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
+                  consequent=action['tout_droit']))
 
-    
     # rules.append(ctrl.Rule(antecedent=(mur_dist['loin'] | obs_dist['loin']), consequent=action['tout_droit']))
-    
+
     # rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] & mur_angl['droite']), consequent=action['droite']))
     # rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] & mur_angl['gauche']), consequent=action['gauche']))
 
@@ -105,9 +105,9 @@ class LogiqueFlou:
         print('-------------------------------------------------------')
 
         # Display fuzzy variables
-        for var in self.fuzz_ctrl.ctrl.fuzzy_variables:
-           var.view()
-        plt.show()
+        #for var in self.fuzz_ctrl.ctrl.fuzzy_variables:
+        #    var.view()
+        #plt.show()
 
     def get_position_player(self, player):
         current_position = player.get_rect().center
@@ -118,7 +118,8 @@ class LogiqueFlou:
         test = f"--- {input_name} list input"
 
         if len(list_input) < max_range:
-            raise Exception(f"La liste d'input {input_name} est trop petite, elle doit avoir au moins {max_range} valeurs") 
+            raise Exception(
+                f"La liste d'input {input_name} est trop petite, elle doit avoir au moins {max_range} valeurs")
 
         for i in range(max_range):
             self.fuzz_ctrl.input['angle_' + input_name + str(i)] = list_input[i][0]
@@ -126,14 +127,13 @@ class LogiqueFlou:
 
             test += ' ' + str(list_input[i]) + ', '
             # if i < len(list_input):
-                
+
             #     test += ' ' + str(list_input[i]) + ', '
             # else:
             #     self.fuzz_ctrl.input[input_name + str(i)] = default_value
             #     test += ' ' + str(default_value) + ', '
 
         print(test)
-        
 
     def run(self, last_direction, last_a_star_direction, player, perception):
         self.angle_vision_joueur = last_direction
@@ -155,11 +155,9 @@ class LogiqueFlou:
         if len(variables) > 0:
             has_obstacle = True
         return direction, has_obstacle
-    
-    
-    def get_distance(self, p1, p2):
-        return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
+    def get_distance(self, p1, p2):
+        return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
     def get_variables(self, liste_perception, player, name):
         # angle_entre_perception = []
@@ -182,7 +180,7 @@ class LogiqueFlou:
 
             # if name == 'angle_obstacle':
             #     print(angle_deg)
-                
+
             # distances.append(self.get_distance(point1, point2))
             print(f"-- distance {self.get_distance(point1, point2)} -- {name}")
             variables.append((angle_deg, distance))
@@ -202,9 +200,9 @@ class LogiqueFlou:
 
             else:
                 if angle_relatif > 0:
-                   variables_finales.append((90, variables[i][1]))
+                    variables_finales.append((90, variables[i][1]))
                 elif angle_relatif < 0:
-                    variables_finales.append((-90, variables[i][1])) 
+                    variables_finales.append((-90, variables[i][1]))
 
         return variables_finales
 
@@ -221,29 +219,3 @@ class LogiqueFlou:
         p2_converted = (p2_x, p2_y)
 
         return p1_converted, p2_converted
-
-    # def angle_between(self, p1, p2):
-    #     angle_rad = np.arctan2(p2[1] - p1[1], p2[0] - p1[0])
-    #     angle_deg = np.degrees(angle_rad)
-    #     print(f"angle deg {angle_deg}")
-    #
-    #     if angle_deg < 0:
-    #         angle_deg += 360
-    #     print(f"angle deg apres {angle_deg}")
-    #     return angle_deg
-    #
-    #
-    # def get_angle_between(self, pos_joueur, obstacle, name):
-    #     # print(f"position joueur {pos_joueur} position obstacle {obstacle.center}")
-    #
-    #     angle = self.angle_between(pos_joueur, obstacle.center)
-    #     print(name)
-    #     # print(f"angle entre joueur et {name} {angle}"	)
-    #     # if obstacle.center[0] < pos_joueur[0]:
-    #     #     angle += 180
-    #     # elif obstacle.center[0] > pos_joueur[0]:
-    #     #     if obstacle.center[1] < pos_joueur[1]:
-    #     #         angle += 360
-    #
-    #     # print(f"angle entre joueur et obstacle {angle}")
-    #     return angle
