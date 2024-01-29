@@ -36,6 +36,7 @@ class App:
         self.maze.make_maze_item_lists()
         self._image_surf = pygame.image.load("assets/Images/knight.png")
         self.player.set_position(self.maze.start[0], self.maze.start[1])
+        #self.player.set_position(76, 210)
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
 
@@ -223,11 +224,11 @@ class App:
             self.on_keyboard_input(keys)
 
             perception = self.maze.make_perception_list(self.player, self._display_surf)
-            # instruction = self.ai_controller.run_logique_flou(self.player, perception)
-            # instruction = self.ai_controller.play(self.player, perception)
-            self.ai_controller.play(self.player, perception)
+            #instruction = self.ai_controller.run_logique_flou(self.player, perception)
+            instruction = self.ai_controller.play(self.player, perception)
+            #self.ai_controller.play(self.player, perception)
 
-            # self.on_AI_input(instruction)
+            self.on_AI_input(instruction)
 
             if self.on_coin_collision():
                 self.score += 1

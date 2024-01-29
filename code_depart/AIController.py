@@ -136,13 +136,13 @@ class AIController:
 
         next_direction = logique_direction if has_obstacle else self.last_a_star_direction
         
-        print(f"a_star_direction {self.last_a_star_direction}")
+        #print(f"a_star_direction {self.last_a_star_direction}")
         # print(f"logique_direction {logique_direction}")
-        print(f"next_direction {next_direction}")
+        #print(f"next_direction {next_direction}")
         
         self.last_direction = next_direction
 
-        # return next_direction
+        return next_direction
     
 
     def get_a_star_direction(self, player):
@@ -155,7 +155,7 @@ class AIController:
         if self.last_position is not None and self.last_position != current_position:
             # continue to the next position in the path
             self.path_index += 1
-            print(f"path_index {self.path_index} current_position {current_position}, next_position {self.path_positions[self.path_index]}")
+            #print(f"path_index {self.path_index} current_position {current_position}, next_position {self.path_positions[self.path_index]}")
 
         a_star_direction = self.get_direction(current_position, self.path_positions[self.path_index])
         self.last_a_star_direction = a_star_direction
@@ -163,12 +163,12 @@ class AIController:
 
 
     def run_logique_flou(self, player, perception):
-        print(f"last_direction {self.last_direction}")
+        #print(f"last_direction {self.last_direction}")
 
         instruction, has_obstacle = self.logique_flou.run(self.last_direction, self.last_a_star_direction, player, perception)
         next_direction = self.last_direction
         
-        print(f"next_direction before conversion {next_direction}")
+        #print(f"next_direction before conversion {next_direction}")
 
         next_direction -= instruction
         if next_direction > 360 : 
