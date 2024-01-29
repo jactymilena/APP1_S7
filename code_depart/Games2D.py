@@ -1,6 +1,5 @@
 import Main_Prolog
 from pygame.locals import *
-import Genetic
 from Player import *
 from Maze import *
 from Constants import *

@@ -72,6 +72,7 @@ class Genetic:
 
     def doSelection(self):
         lowest_value = 0
+
         for fitness in self.fitness:
             if fitness < lowest_value:
                 lowest_value = fitness
@@ -91,7 +92,7 @@ class Genetic:
         for fitness in positive_fitness:
             probability.append(fitness / sum)
 
-        if (round(np.sum(probability), 6) != 1.0):
+        if round(np.sum(probability), 6) != 1.0:
             raise Exception('Probability inside wheel selection incorrect!')
 
         idx1 = np.random.choice(np.arange(POPULATION_SIZE), size=NUMPAIRS, replace=True, p=probability)
