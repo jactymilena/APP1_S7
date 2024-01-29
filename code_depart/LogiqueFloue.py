@@ -17,11 +17,11 @@ def createFuzzyControllerObstacle():
     action.accumulation_method = np.fmax
 
     for obj in [obs_angl, mur_angl]:
-        obj['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -40, -20, -5])
-        obj['droite'] = fuzz.trapmf(obs_angl.universe, [5, 20, 40, 71])
+        obj['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -40, -25, -5])
+        obj['droite'] = fuzz.trapmf(obs_angl.universe, [5, 25, 40, 71])
         obj['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -55])
         obj['droite_completement'] = fuzz.trapmf(obs_angl.universe, [55, 80, 90, 90])
-        obj['centre'] = fuzz.trimf(obs_angl.universe, [-10, 0, 10])
+        obj['centre'] = fuzz.trimf(obs_angl.universe, [-15, 0, 15])
 
     action['gauche'] = fuzz.trapmf(action.universe, [-90, -90, -60, -5])
     action['droite'] = fuzz.trapmf(action.universe, [5, 60, 90, 90])
@@ -33,15 +33,16 @@ def createFuzzyControllerObstacle():
     rules.append(
         ctrl.Rule(antecedent=(obs_angl['gauche'] | mur_angl['gauche'] | obs_angl['centre'] | mur_angl['centre']),
                   consequent=action['droite']))
-    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche']), consequent=action['droite']))
 
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | mur_angl['droite']), consequent=action['gauche']))
-    rules.append(ctrl.Rule(antecedent=(obs_angl['droite']), consequent=action['gauche']))
 
     rules.append(ctrl.Rule(antecedent=(obs_angl['droite_completement'] | obs_angl['gauche_completement']),
                            consequent=action['tout_droit']))
     rules.append(ctrl.Rule(antecedent=(mur_angl['droite_completement'] | mur_angl['gauche_completement']),
                            consequent=action['tout_droit']))
+    
+    # rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] & mur_angl['droite']), consequent=action['droite']))
+    # rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] & mur_angl['gauche']), consequent=action['gauche']))
 
     # rules.append(ctrl.Rule(antecedent=(mur_angl['gauche']), consequent=cons1['tourneDroite']))
     # rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] & mur_angl['gauche']), consequent=cons1['tourneDroite'] % 1.3))
@@ -89,9 +90,9 @@ class LogiqueFlou:
         print('-------------------------------------------------------')
 
         # Display fuzzy variables
-        # for var in self.fuzz_ctrl.ctrl.fuzzy_variables:
-        #    var.view()
-        # plt.show()
+        for var in self.fuzz_ctrl.ctrl.fuzzy_variables:
+           var.view()
+        plt.show()
 
     def get_position_player(self, player):
         current_position = player.get_rect().center
@@ -100,15 +101,22 @@ class LogiqueFlou:
     def associer_input_flou(self, max_range, list_input, input_name, default_value):
         # print(f"input name {input_name} list input {list_input}")
         test = f"--- {input_name} list input"
-        for i in range(max_range):
-            if i < len(list_input):
-                self.fuzz_ctrl.input[input_name + str(i)] = list_input[i]
-                test += ' ' + str(list_input[i]) + ', '
-            else:
-                self.fuzz_ctrl.input[input_name + str(i)] = default_value
-                test += ' ' + str(default_value) + ', '
 
-        # print(test)
+        if len(list_input) < max_range:
+            raise Exception(f"La liste d'input {input_name} est trop petite, elle doit avoir au moins {max_range} valeurs") 
+
+        for i in range(max_range):
+            self.fuzz_ctrl.input[input_name + str(i)] = list_input[i]
+            test += ' ' + str(list_input[i]) + ', '
+            # if i < len(list_input):
+                
+            #     test += ' ' + str(list_input[i]) + ', '
+            # else:
+            #     self.fuzz_ctrl.input[input_name + str(i)] = default_value
+            #     test += ' ' + str(default_value) + ', '
+
+        print(test)
+        
 
     def run(self, last_direction, last_a_star_direction, player, perception):
         self.angle_vision_joueur = last_direction
@@ -117,6 +125,7 @@ class LogiqueFlou:
         # self.fuzz_ctrl.input['next_direction'] = self.angle_vision_joueur - last_a_star_direction
 
         angles_relatifs = self.get_angles(obstacle_list, player, 'angle_obstacle')
+
         self.associer_input_flou(1, angles_relatifs, 'angle_obstacle', 90)
 
         angles_relatifs = self.get_angles(wall_list, player, 'angle_mur')
@@ -153,11 +162,17 @@ class LogiqueFlou:
 
         angles_relatifs = []
         for angle in angle_entre_perception:
-            if 90 > (self.angle_vision_joueur - angle) > -90:
+            angle_relatif = self.angle_vision_joueur - angle
+            if 90 > angle_relatif > -90:
                 # if name == 'angle_obstacle':
                 #     print(f"Angle vision: {self.angle_vision_joueur}")
                 #     print(f"Angle relatif: {self.angle_vision_joueur - angle}")
-                angles_relatifs.append(self.angle_vision_joueur - angle)
+                angles_relatifs.append(angle_relatif)
+            else:
+                if angle_relatif > 0:
+                   angles_relatifs.append(90)
+                elif angle_relatif < 0:
+                    angles_relatifs.append(-90) 
 
         return angles_relatifs
 
