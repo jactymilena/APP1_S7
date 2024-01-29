@@ -87,23 +87,37 @@ class App:
 
     # FONCTION À Ajuster selon votre format d'instruction
     def on_AI_input(self, instruction):
-        if instruction == 'DOOR':
+        if DOOR in instruction.keys():
             state = self.maze.look_at_door(self.player, 4)
             position = Main_Prolog.find_door_solution(state)
             self.maze.unlock_door(position)
 
-        if instruction == 'RIGHT':
-            self.move_player_right()
+        if MONSTER in instruction.keys():
+            simulation = AlgoGenetique.AlgoGenetique()
+            winner = simulation.Fight_Simulation(instruction[MONSTER], self.player)
+            self.player.set_attributes(winner)
+            self.fight_monster(instruction[MONSTER])
 
-        if instruction == 'LEFT':
-            self.move_player_left()
+        if DIRECTION in instruction.keys():
+            if instruction[DIRECTION] == RIGHT:
+                self.move_player_right()
 
-        if instruction == 'UP':
-            self.move_player_up()
+            if instruction[DIRECTION] == LEFT:
+                self.move_player_left()
 
-        if instruction == 'DOWN':
-            self.move_player_down()
+            if instruction[DIRECTION] == UP:
+                self.move_player_up()
 
+            if instruction[DIRECTION] == DOWN:
+                self.move_player_down()
+
+    def fight_monster(self, monster):
+        if monster.fight(self.player):
+            self.maze.monsterList.remove(monster)
+            self.score += 50
+        else:
+            self._running = False
+            self._dead = True
 
     def on_collision(self):
         return self.on_wall_collision() or self.on_door_collision()#or self.on_obstacle_collision() #or 
@@ -230,16 +244,8 @@ class App:
 
             monster = self.on_monster_collision()
             if monster:
-                simulation = AlgoGenetique.AlgoGenetique()
-                winner = simulation.Fight_Simulation(monster, self.player)
-                self.player.set_attributes(winner)
+                self.fight_monster(monster)
 
-                if monster.fight(self.player):
-                    self.maze.monsterList.remove(monster)
-                    self.score += 50
-                else:
-                    self._running = False
-                    self._dead = True
             if self.on_exit():
                 self._running = False
                 self._win = True

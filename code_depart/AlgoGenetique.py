@@ -10,7 +10,7 @@ class AlgoGenetique:
         run_won = 0
         gen_higher_than_500 = 0
 
-        for j in range(100):
+        while loser:
             loser = True
             run = run + 1
             print(f"RUN : {run}")

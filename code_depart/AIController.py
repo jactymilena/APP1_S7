@@ -1,3 +1,5 @@
+from Constants import *
+
 class Node:
     def __init__(self, pos, parent=None):
         self.pos = pos
@@ -51,13 +53,13 @@ class AIController:
         deltay = current_pos[1] - next_pos[1]
 
         if deltax > 0:
-            return "LEFT"
+            return LEFT
         elif deltax < 0:
-            return "RIGHT"
+            return RIGHT
         elif deltay > 0:
-            return "UP"
+            return UP
         elif deltay < 0:
-            return "DOWN"
+            return DOWN
         
     
     def setup(self, maze):
@@ -122,8 +124,10 @@ class AIController:
         wall_list, obstacle_list, item_list, monster_list, door_list = perception
         
         if len(door_list) > 0:
-            return 'DOOR'
-        
+            return {DOOR : ''}
+        if len(monster_list) > 0:
+
+            return {MONSTER : monster_list[0]}
 
         if(self.path_index >= len(self.path_positions)):
             print("Path completed or not found")
@@ -137,5 +141,8 @@ class AIController:
 
         self.last_position = current_position
 
-        return self.get_direction(current_position, self.path_positions[self.path_index])
+        result = {}
+        result[DIRECTION] = self.get_direction(current_position, self.path_positions[self.path_index])
+
+        return result
     

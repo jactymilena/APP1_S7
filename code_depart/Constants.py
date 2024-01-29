@@ -31,3 +31,10 @@ EXIT = 'E'
 OBSTACLE = 'O'
 MONSTER = 'M'
 DOOR = 'D'
+
+DIRECTION = 'DIR'
+RIGHT = 'R'
+LEFT = 'L'
+UP = 'U'
+DOWN = 'DO'
+
