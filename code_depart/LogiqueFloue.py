@@ -1,10 +1,7 @@
-import gym
-import time
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import matplotlib.pyplot as plt
 import numpy as np
-import AIController as controller
 from Player import *
 
 
@@ -19,8 +16,8 @@ def createFuzzyControllerObstacle():
     action.accumulation_method = np.fmax
 
     for obj in [obs_angl, mur_angl]:
-        obj['gauche'] = fuzz.trapmf(obj.universe, [-71, -40, -25, -10])
-        obj['droite'] = fuzz.trapmf(obj.universe, [10, 25, 40, 71])
+        obj['gauche'] = fuzz.trapmf(obj.universe, [-71, -40, -25, 0])
+        obj['droite'] = fuzz.trapmf(obj.universe, [0, 25, 40, 71])
         obj['gauche_completement'] = fuzz.trapmf(obj.universe, [-90, -90, -80, -38])
         obj['droite_completement'] = fuzz.trapmf(obj.universe, [38, 80, 90, 90])
         obj['centre'] = fuzz.trimf(obj.universe, [-32, 0, 32])
@@ -34,21 +31,20 @@ def createFuzzyControllerObstacle():
     #     obj['proche'] = fuzz.trapmf(obj.universe, [0, 0, 35, 45])
     #     obj['loin'] = fuzz.trapmf(obj.universe, [35, 45, 80, 80])
 
-    action['gauche'] = fuzz.trapmf(action.universe, [-90, -90, -60, -5])
-    action['droite'] = fuzz.trapmf(action.universe, [5, 60, 90, 90])
-    action['tout_droit'] = fuzz.trimf(action.universe, [-20, 0, 20])
+    action['gauche'] = fuzz.trapmf(action.universe, [-90, -90, -60, 0])
+    action['droite'] = fuzz.trapmf(action.universe, [0, 60, 90, 90])
+    action['tout_droit'] = fuzz.trimf(action.universe, [-40, 0, 40])
 
     rules = []
 
     # Obstacles
-    rules.append(
-        ctrl.Rule(antecedent=(obs_angl['gauche'] | mur_angl['gauche'] | obs_angl['centre'] | mur_angl['centre']),
+    rules.append(ctrl.Rule(antecedent=((obs_angl['gauche'] | mur_angl['gauche'] | obs_angl['centre'] | mur_angl['centre']) & obs_dist['proche']),
                   consequent=action['droite']))
 
-    rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | mur_angl['droite']), consequent=action['gauche']))
+    rules.append(ctrl.Rule(antecedent=((obs_angl['droite'] | mur_angl['droite']) & obs_dist['proche']),
+                           consequent=action['gauche']))
 
-    rules.append(
-        ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
+    rules.append(ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
                   consequent=action['tout_droit']))
     rules.append(
         ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
@@ -105,35 +101,32 @@ class LogiqueFlou:
         print('-------------------------------------------------------')
 
         # Display fuzzy variables
-        #for var in self.fuzz_ctrl.ctrl.fuzzy_variables:
-        #    var.view()
-        #plt.show()
+        # for var in self.fuzz_ctrl.ctrl.fuzzy_variables:
+        #     var.view()
+        # plt.show()
 
     def get_position_player(self, player):
         current_position = player.get_rect().center
         return current_position
 
     def associer_input_flou(self, max_range, list_input, input_name):
-        # print(f"input name {input_name} list input {list_input}")
-        test = f"--- {input_name} list input"
 
         if len(list_input) < max_range:
-            raise Exception(
-                f"La liste d'input {input_name} est trop petite, elle doit avoir au moins {max_range} valeurs")
+            angle = 90
+            distance = 80
+
+            for i in range(max_range - len(list_input)):
+                list_input.append((angle, distance))
+
 
         for i in range(max_range):
             self.fuzz_ctrl.input['angle_' + input_name + str(i)] = list_input[i][0]
             self.fuzz_ctrl.input['distance_' + input_name + str(i)] = list_input[i][1]
 
-            test += ' ' + str(list_input[i]) + ', '
-            # if i < len(list_input):
+            print(f"-- Distance de/du {input_name} : {list_input[i][1]}")
+            print(f"-- Angle de/du {input_name} : {list_input[i][0]}")
 
-            #     test += ' ' + str(list_input[i]) + ', '
-            # else:
-            #     self.fuzz_ctrl.input[input_name + str(i)] = default_value
-            #     test += ' ' + str(default_value) + ', '
 
-        #print(test)
 
     def run(self, last_direction, last_a_star_direction, player, perception):
         self.angle_vision_joueur = last_direction
@@ -146,8 +139,10 @@ class LogiqueFlou:
 
         variables = self.get_variables(wall_list, player, 'mur')
         self.associer_input_flou(1, variables, 'mur')
+        print('')
 
         self.fuzz_ctrl.compute()
+        self.fuzz_ctrl.print_state()
         direction = self.fuzz_ctrl.output['output1']
 
         has_obstacle = False
@@ -156,6 +151,7 @@ class LogiqueFlou:
         return direction, has_obstacle
 
     def get_distance(self, p1, p2):
+        #print(f"point 1: {p1}, point 2: {p2}")
         return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
     def get_variables(self, liste_perception, player, name):
@@ -173,24 +169,33 @@ class LogiqueFlou:
             if angle_deg < 0:
                 angle_deg = angle_deg + 360
 
+            #print(f"Angle absolue: {angle_deg}")
+
             distance = self.get_distance(point1, point2)
 
-            print(f"-- distance {distance} -- {name}")
             variables.append((angle_deg, distance))
 
-
         variables_finales = []
+
         for i in range(len(variables)):
             angle_relatif = self.angle_vision_joueur - variables[i][0]
+            #print(f"Angle de vision: {self.angle_vision_joueur}")
+            #print(f"Angle relatif: {angle_relatif}\n")
 
             if 90 > angle_relatif > -90:
                 variables_finales.append((angle_relatif, variables[i][1]))
+                # print(f"-- Distance de/du {name} : {variables[i][1]}")
+                # print(f"-- Angle de/du {name} : {angle_relatif}")
 
-            else:
-                if angle_relatif > 0:
-                    variables_finales.append((90, variables[i][1]))
-                elif angle_relatif < 0:
-                    variables_finales.append((-90, variables[i][1]))
+            # else:
+            #     if angle_relatif > 0:
+            #         variables_finales.append((90, variables[i][1]))
+            #         print(f"-- Distance de/du {name} : {variables[i][1]}")
+            #         print(f"-- Angle (par défaut) de/du {name} : 90")
+            #     elif angle_relatif < 0:
+            #         variables_finales.append((-90, variables[i][1]))
+            #         print(f"-- Distance de/du {name} : {variables[i][1]}")
+            #         print(f"-- Angle (par défaut) de/du {name} : -90")
 
         return variables_finales
 
