@@ -17,11 +17,11 @@ def createFuzzyControllerObstacle():
     action.accumulation_method = np.fmax
 
     for obj in [obs_angl, mur_angl]:
-        obj['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -40, -25, -5])
-        obj['droite'] = fuzz.trapmf(obs_angl.universe, [5, 25, 40, 71])
-        obj['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -55])
-        obj['droite_completement'] = fuzz.trapmf(obs_angl.universe, [55, 80, 90, 90])
-        obj['centre'] = fuzz.trimf(obs_angl.universe, [-15, 0, 15])
+        obj['gauche'] = fuzz.trapmf(obs_angl.universe, [-71, -40, -25, -10])
+        obj['droite'] = fuzz.trapmf(obs_angl.universe, [10, 25, 40, 71])
+        obj['gauche_completement'] = fuzz.trapmf(obs_angl.universe, [-90, -90, -80, -38])
+        obj['droite_completement'] = fuzz.trapmf(obs_angl.universe, [38, 80, 90, 90])
+        obj['centre'] = fuzz.trimf(obs_angl.universe, [-32, 0, 32])
 
     action['gauche'] = fuzz.trapmf(action.universe, [-90, -90, -60, -5])
     action['droite'] = fuzz.trapmf(action.universe, [5, 60, 90, 90])
