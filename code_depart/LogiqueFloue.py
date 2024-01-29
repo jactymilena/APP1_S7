@@ -113,7 +113,7 @@ class LogiqueFlou:
         current_position = player.get_rect().center
         return current_position
 
-    def associer_input_flou(self, max_range, list_input, input_name, default_value):
+    def associer_input_flou(self, max_range, list_input, input_name):
         # print(f"input name {input_name} list input {list_input}")
         test = f"--- {input_name} list input"
 
@@ -133,7 +133,7 @@ class LogiqueFlou:
             #     self.fuzz_ctrl.input[input_name + str(i)] = default_value
             #     test += ' ' + str(default_value) + ', '
 
-        print(test)
+        #print(test)
 
     def run(self, last_direction, last_a_star_direction, player, perception):
         self.angle_vision_joueur = last_direction
@@ -142,11 +142,10 @@ class LogiqueFlou:
         # self.fuzz_ctrl.input['next_direction'] = self.angle_vision_joueur - last_a_star_direction
 
         variables = self.get_variables(obstacle_list, player, 'obstacle')
-
-        self.associer_input_flou(1, variables, 'obstacle', 90)
+        self.associer_input_flou(1, variables, 'obstacle')
 
         variables = self.get_variables(wall_list, player, 'mur')
-        self.associer_input_flou(1, variables, 'mur', 90)
+        self.associer_input_flou(1, variables, 'mur')
 
         self.fuzz_ctrl.compute()
         direction = self.fuzz_ctrl.output['output1']
@@ -160,8 +159,6 @@ class LogiqueFlou:
         return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
     def get_variables(self, liste_perception, player, name):
-        # angle_entre_perception = []
-        # distances = []
         variables = []
 
         for perception in liste_perception:
@@ -178,24 +175,15 @@ class LogiqueFlou:
 
             distance = self.get_distance(point1, point2)
 
-            # if name == 'angle_obstacle':
-            #     print(angle_deg)
-
-            # distances.append(self.get_distance(point1, point2))
-            print(f"-- distance {self.get_distance(point1, point2)} -- {name}")
+            print(f"-- distance {distance} -- {name}")
             variables.append((angle_deg, distance))
-            # angle_entre_perception.append(angle_deg)
-            # angle_entre_perception.append(self.get_angle_between(self.get_position_player(player), perception, name))
 
-        # angles_relatifs = []
+
         variables_finales = []
         for i in range(len(variables)):
             angle_relatif = self.angle_vision_joueur - variables[i][0]
+
             if 90 > angle_relatif > -90:
-                # if name == 'angle_obstacle':
-                #     print(f"Angle vision: {self.angle_vision_joueur}")
-                #     print(f"Angle relatif: {self.angle_vision_joueur - angle}")
-                # angles_relatifs.append(angle_relatif)
                 variables_finales.append((angle_relatif, variables[i][1]))
 
             else:
