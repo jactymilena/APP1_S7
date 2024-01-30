@@ -1,9 +1,3 @@
-%% etat de la porte
-%% ENV=['METAL','COLOR1','COLOR2','COlOR3',NULL,NULL,NULL]
-%% ['silver','blue','green','yellow']
-%% ['silver','red','green','yellow', 'black']
-%% ['silver','red','green','yellow', '', '', '']
-
 color(red).
 color(yellow).
 color(blue).

@@ -36,10 +36,6 @@ class App:
         self._image_surf = pygame.image.load("assets/Images/knight.png")
         self.player.set_position(self.maze.start[0], self.maze.start[1])
 
-        # monster config -  A SUPPRIMER PLUS TARD
-        # self.player.set_position(745.0, 264.0)
-        # monster config end
-
         self.player.set_size(PLAYER_SIZE*self.maze.tile_size_x, PLAYER_SIZE*self.maze.tile_size_x)
         self._image_surf = pygame.transform.scale(self._image_surf, self.player.get_size())
 
@@ -100,38 +96,30 @@ class App:
 
         if DIRECTION in instruction.keys():
             if instruction[DIRECTION] <= 22.5 or instruction[DIRECTION] >= 337.5:
-                print("RIGHT")
                 self.move_player_right()
 
             elif 67.5 >= instruction[DIRECTION] >= 22.5:
-                print("UP-RIGHT")
                 self.move_player_right()
                 self.move_player_up()
 
             elif 112.5 >= instruction[DIRECTION] >= 67.5:
-                print("UP")
                 self.move_player_up()
 
             elif 157.5 >= instruction[DIRECTION] >= 112.5:
-                print("UP-LEFT")
                 self.move_player_left()
                 self.move_player_up()
 
             elif 202.5 >= instruction[DIRECTION] >= 157.5:
-                print("LEFT")
                 self.move_player_left()
 
             elif 247.5 >= instruction[DIRECTION] >= 202.5:
-                print("DOWN-LEFT")
                 self.move_player_down()
                 self.move_player_left()
 
             elif 292.5 >= instruction[DIRECTION] >= 247.5:
-                print("DOWN")
                 self.move_player_down()
 
             elif 337.5 >= instruction[DIRECTION] >= 292.5:
-                print("DOWN-RIGHT")
                 self.move_player_down()
                 self.move_player_right()
 

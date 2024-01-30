@@ -1,6 +1,6 @@
 from Constants import *
 import LogiqueFloue
-
+import numpy as np
 
 class Node:
     def __init__(self, pos, parent=None):
@@ -21,13 +21,15 @@ class AIController:
         self.pending_list = []
         self.start_node = None
         self.goal_node = None
-        self.path_index = 0
         self.neighbors_pos = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # right, up, down, left
-        self.last_position = None
         self.path_positions = []
+
+        self.path_index = 0
+        self.last_position = None
         self.temp_goal_position = None  # temporary goal position for the player
         self.last_direction = 270
         self.direction_a_star = 0
+        self.visited_postitions = []
 
     def init(self, maze, tile_size_x, tile_size_y):
         self.tile_size_x = tile_size_x
@@ -116,8 +118,28 @@ class AIController:
                 if n not in self.pending_list:
                     self.pending_list.append(n)
 
-    def pixel_to_tile_pos(self, pixel_pos):
+    def get_distance(self, p1, p2):
+        return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+
+    def find_closest_pos(self, current_pos):
+        closest_distance = 100000
+        closest_idx = 0
+
+        for i, pos in enumerate(self.path_positions):
+            if pos in self.visited_postitions:
+                continue
+            distance = self.get_distance(current_pos, pos)
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_idx = i
+
+        return closest_idx
+
+    def pixel_to_tile_center_pos(self, pixel_pos):
         return int(pixel_pos[0] // (self.tile_size_x / 3)), int(pixel_pos[1] // (self.tile_size_y / 3))
+    
+    def pixel_to_tile_pos(self, pixel_pos):
+        return int(pixel_pos[0] // (self.tile_size_x)), int(pixel_pos[1] // (self.tile_size_y))
 
     def tile_pos_to_center_pos(self, tile_pos):
         return ((tile_pos[0] * 3) + 1), ((tile_pos[1] * 3) + 1)
@@ -128,11 +150,12 @@ class AIController:
             return
 
         temp_center_pos = self.tile_pos_to_center_pos(self.temp_goal_position)
-        curr_center_pos = self.pixel_to_tile_pos(player.get_rect().center)
+        curr_center_pos = self.pixel_to_tile_center_pos(player.get_rect().center)
 
         if self.temp_goal_position is not None:
             if temp_center_pos == curr_center_pos:
-                self.path_index += 1
+                self.visited_postitions.append(self.temp_goal_position)
+                self.path_index = self.find_closest_pos(self.pixel_to_tile_pos(player.get_rect().center))
                 self.temp_goal_position = self.path_positions[self.path_index]
                 temp_center_pos = self.tile_pos_to_center_pos(self.temp_goal_position)
 
@@ -156,7 +179,6 @@ class AIController:
         if has_obstacle:
             difference = abs(logique_direction - self.last_direction)
             if difference < 0.01:
-                print('ON NE PREND PAS LA DIRECTION DE LA LF')
                 next_direction = self.direction_a_star
             else:
                 next_direction = logique_direction
@@ -168,11 +190,8 @@ class AIController:
         return {DIRECTION: next_direction}
 
     def run_logique_floue(self, player, perception):
-        # print(f"last_direction {self.last_direction}")
         instruction, has_obstacle = self.logique_floue.run(self.last_direction, self.direction_a_star, player, perception)
         next_direction = self.last_direction
-
-        # print(f"next_direction before conversion {next_direction}")
 
         next_direction -= instruction
         if next_direction > 360:

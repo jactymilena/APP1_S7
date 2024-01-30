@@ -31,13 +31,10 @@ class AlgoGenetique:
                     if fitness_tuple[0] == 4:
                         loser = False
                         simulation.bestIndividual = individual
-                        # run_won = run_won + 1
-                        # if i > 500:
-                        #     gen_higher_than_500 = gen_higher_than_500 + 1
 
                 if loser:
                     if (i > 300) and (simulation.bestIndividualFitness < 8):
-                        print('ALGO ARRÊTÉ: Fitness trop poche')
+                        print('ALGO ARRÊTÉ: Fitness trop basse')
                         break
                     simulation.fitness = fitness
                     simulation.eval_fit()
@@ -54,8 +51,6 @@ class AlgoGenetique:
                 print(monster.mock_fight(player))
                 print('')
 
-
-        #genetic.display_generations(simulation)
         print('Fitness of the winner:')
         player.set_attributes(simulation.bestIndividual)
         print(monster.mock_fight(player))
