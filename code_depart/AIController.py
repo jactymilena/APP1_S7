@@ -131,10 +131,19 @@ class AIController:
         logique_direction = None
         if len(obstacle_list) > 0:
             logique_direction, has_obstacle = self.run_logique_flou(player, perception)    
-        # else:
+
+
         self.get_a_star_direction(player)
 
-        next_direction = logique_direction if has_obstacle else self.last_a_star_direction
+        if has_obstacle:
+            difference = abs(logique_direction - self.last_direction)
+            if difference < 0.01:
+                print('ON NE PREND PAS LA DIRECTION DE LA LF')
+                next_direction = self.last_a_star_direction
+            else:
+                next_direction = logique_direction
+        else:
+            next_direction = self.last_a_star_direction
         
         #print(f"a_star_direction {self.last_a_star_direction}")
         # print(f"logique_direction {logique_direction}")

@@ -38,16 +38,19 @@ def createFuzzyControllerObstacle():
     rules = []
 
     # Obstacles
-    rules.append(ctrl.Rule(antecedent=((obs_angl['gauche'] | mur_angl['gauche'] | obs_angl['centre'] | mur_angl['centre']) & obs_dist['proche']),
-                  consequent=action['droite']))
+    rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | mur_angl['droite'] | obs_angl['centre'] | mur_angl['centre']),
+                  consequent=action['gauche']))
 
-    rules.append(ctrl.Rule(antecedent=((obs_angl['droite'] | mur_angl['droite']) & obs_dist['proche']),
-                           consequent=action['gauche']))
+    #rules.append(ctrl.Rule(antecedent=(obs_dist['proche']),
+    #              consequent=action['droite']))
+
+    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] | mur_angl['gauche']),
+                           consequent=action['droite']))
 
     rules.append(ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
                   consequent=action['tout_droit']))
-    rules.append(
-        ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
+
+    rules.append(ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
                   consequent=action['tout_droit']))
 
     # rules.append(ctrl.Rule(antecedent=(mur_dist['loin'] | obs_dist['loin']), consequent=action['tout_droit']))
@@ -144,6 +147,7 @@ class LogiqueFlou:
         self.fuzz_ctrl.compute()
         self.fuzz_ctrl.print_state()
         direction = self.fuzz_ctrl.output['output1']
+        print(f"Direction Logique Flou : {direction}")
 
         has_obstacle = False
         if len(variables) > 0:
