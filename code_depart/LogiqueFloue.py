@@ -6,30 +6,30 @@ from Player import *
 
 
 def createFuzzyControllerObstacle():
-    obs_angl = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
+    obs_angl0 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle0')
+    obs_angl1 = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_obstacle1')
     mur_angl = ctrl.Antecedent(np.linspace(-90, 90, 1000), 'angle_mur0')
-    obs_dist = ctrl.Antecedent(np.linspace(0, 80, 1000), 'distance_obstacle0')
+    obs_dist0 = ctrl.Antecedent(np.linspace(0, 80, 1000), 'distance_obstacle0')
+    obs_dist1 = ctrl.Antecedent(np.linspace(0, 80, 1000), 'distance_obstacle1')
     mur_dist = ctrl.Antecedent(np.linspace(0, 80, 1000), 'distance_mur0')
 
     action = ctrl.Consequent(np.linspace(-90, 90, 1000), 'output1', defuzzify_method='centroid')
 
     action.accumulation_method = np.fmax
 
-    for obj in [obs_angl, mur_angl]:
+    for obj in [obs_angl0, obs_angl1, mur_angl]:
         obj['gauche'] = fuzz.trapmf(obj.universe, [-71, -40, -25, 0])
         obj['droite'] = fuzz.trapmf(obj.universe, [0, 25, 40, 71])
         obj['gauche_completement'] = fuzz.trapmf(obj.universe, [-90, -90, -80, -38])
         obj['droite_completement'] = fuzz.trapmf(obj.universe, [38, 80, 90, 90])
         obj['centre'] = fuzz.trimf(obj.universe, [-32, 0, 32])
 
-    obs_dist['proche'] = fuzz.trapmf(obs_dist.universe, [0, 0, 35, 45])
-    obs_dist['loin'] = fuzz.trapmf(obs_dist.universe, [35, 45, 80, 80])
+    for obj in [obs_dist0, obs_dist1]:
+        obj['proche'] = fuzz.trapmf(obj.universe, [0, 0, 35, 45])
+        obj['loin'] = fuzz.trapmf(obj.universe, [35, 45, 80, 80])
 
     mur_dist['proche'] = fuzz.trapmf(mur_dist.universe, [0, 0, 35, 50])
     mur_dist['loin'] = fuzz.trapmf(mur_dist.universe, [35, 50, 80, 80])
-    # for obj in [obs_dist, mur_dist]:
-    #     obj['proche'] = fuzz.trapmf(obj.universe, [0, 0, 35, 45])
-    #     obj['loin'] = fuzz.trapmf(obj.universe, [35, 45, 80, 80])
 
     action['gauche'] = fuzz.trapmf(action.universe, [-90, -90, -60, 0])
     action['droite'] = fuzz.trapmf(action.universe, [0, 60, 90, 90])
@@ -37,21 +37,61 @@ def createFuzzyControllerObstacle():
 
     rules = []
 
-    # Obstacles
-    rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | mur_angl['droite'] | obs_angl['centre'] | mur_angl['centre']),
+    # si obstacles à droite tu vas à gauche
+    rules.append(ctrl.Rule(antecedent=(obs_angl0['droite'] | obs_angl1['droite'] | mur_angl['droite']),
                   consequent=action['gauche']))
 
-    #rules.append(ctrl.Rule(antecedent=(obs_dist['proche']),
-    #              consequent=action['droite']))
-
-    rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] | mur_angl['gauche']),
+    # si obstacle à gauche tu vas à droite
+    rules.append(ctrl.Rule(antecedent=(obs_angl0['gauche'] | obs_angl1['gauche'] | mur_angl['gauche']),
                            consequent=action['droite']))
 
-    rules.append(ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
+    # si obstacle au centre et mur à gauche on va à droite
+    rules.append(ctrl.Rule(antecedent=((obs_angl0['centre'] | obs_angl1['centre']) & mur_angl['gauche']),
+                           consequent=action['droite']))
+
+    # si obstacle au centre et mur à droite on va à droite
+    rules.append(ctrl.Rule(antecedent=((obs_angl0['centre'] | obs_angl1['centre']) & mur_angl['droite']),
+                           consequent=action['gauche']))
+
+    # si on est entre 2 obstacles va tout droit
+    #rules.append(ctrl.Rule(antecedent=((obs_angl0['droite_completement'] & (obs_angl1['gauche_completement']) | ()),
+    #                       consequent=action['tout_droit']))
+
+    # si obstacle loin ou pas dans notre champs de vision
+    rules.append(ctrl.Rule(antecedent=((obs_angl0['droite_completement'] | obs_angl0['gauche_completement'] | obs_dist0['loin']) & (obs_angl1['droite_completement'] | obs_angl1['gauche_completement'] | obs_dist1['loin'])),
+                  consequent=action['tout_droit']))
+    # rules.append(ctrl.Rule(antecedent=(obs_angl1['droite_completement'] | obs_angl1['gauche_completement'] | obs_dist1['loin']),
+    #               consequent=action['tout_droit']))
+
+    # si mur loin ou pas dans notre champs de vision
+    rules.append(ctrl.Rule(antecedent=(mur_angl['droite_completement'] | mur_angl['gauche_completement'] | mur_dist['loin']),
                   consequent=action['tout_droit']))
 
-    rules.append(ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
-                  consequent=action['tout_droit']))
+
+
+
+    # ICI
+    # rules.append(ctrl.Rule(antecedent=(obs_angl['droite'] | mur_angl['droite']),
+    #               consequent=action['gauche']))
+    #
+    # rules.append(ctrl.Rule(antecedent=(obs_angl['gauche'] | mur_angl['gauche']),
+    #                        consequent=action['droite']))
+    #
+
+
+    # rules.append(ctrl.Rule(antecedent=((obs_angl['droite_completement'] | obs_angl['gauche_completement']) & obs_dist['loin']),
+    #               consequent=action['tout_droit']))
+    #
+    # rules.append(ctrl.Rule(antecedent=((mur_angl['droite_completement'] | mur_angl['gauche_completement']) & mur_dist['loin']),
+    #               consequent=action['tout_droit']))
+
+
+
+
+
+
+
+
 
     # rules.append(ctrl.Rule(antecedent=(mur_dist['loin'] | obs_dist['loin']), consequent=action['tout_droit']))
 
@@ -142,7 +182,7 @@ class LogiqueFlou:
         # self.fuzz_ctrl.input['next_direction'] = self.angle_vision_joueur - last_a_star_direction
 
         variables = self.get_variables(obstacle_list, player, 'obstacle')
-        self.associer_input_flou(1, variables, 'obstacle')
+        self.associer_input_flou(2, variables, 'obstacle')
 
         variables = self.get_variables(wall_list, player, 'mur')
         self.associer_input_flou(1, variables, 'mur')
