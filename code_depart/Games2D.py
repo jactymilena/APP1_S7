@@ -99,17 +99,41 @@ class App:
             self.fight_monster(instruction[MONSTER])
 
         if DIRECTION in instruction.keys():
-            if instruction[DIRECTION] == RIGHT:
+            if instruction[DIRECTION] <= 22.5 or instruction[DIRECTION] >= 337.5:
+                print("RIGHT")
                 self.move_player_right()
 
-            if instruction[DIRECTION] == LEFT:
-                self.move_player_left()
-
-            if instruction[DIRECTION] == UP:
+            elif 67.5 >= instruction[DIRECTION] >= 22.5:
+                print("UP-RIGHT")
+                self.move_player_right()
                 self.move_player_up()
 
-            if instruction[DIRECTION] == DOWN:
+            elif 112.5 >= instruction[DIRECTION] >= 67.5:
+                print("UP")
+                self.move_player_up()
+
+            elif 157.5 >= instruction[DIRECTION] >= 112.5:
+                print("UP-LEFT")
+                self.move_player_left()
+                self.move_player_up()
+
+            elif 202.5 >= instruction[DIRECTION] >= 157.5:
+                print("LEFT")
+                self.move_player_left()
+
+            elif 247.5 >= instruction[DIRECTION] >= 202.5:
+                print("DOWN-LEFT")
                 self.move_player_down()
+                self.move_player_left()
+
+            elif 292.5 >= instruction[DIRECTION] >= 247.5:
+                print("DOWN")
+                self.move_player_down()
+
+            elif 337.5 >= instruction[DIRECTION] >= 292.5:
+                print("DOWN-RIGHT")
+                self.move_player_down()
+                self.move_player_right()
 
     def fight_monster(self, monster):
         if monster.fight(self.player):
@@ -120,7 +144,7 @@ class App:
             self._dead = True
 
     def on_collision(self):
-        return self.on_wall_collision() or self.on_door_collision()#or self.on_obstacle_collision() #or 
+        return self.on_wall_collision() or self.on_door_collision() or self.on_obstacle_collision() #or
 
     def move_player_right(self):
         self.player.moveRight()
